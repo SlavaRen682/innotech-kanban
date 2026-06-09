@@ -38,6 +38,7 @@ function loadState() {
         focusOnly: Boolean(saved.focusOnly),
         addOpen: false,
         archiveOpen: false,
+        focusHelpOpen: false,
         draggedId: null
       };
     }
@@ -52,6 +53,7 @@ function loadState() {
     focusOnly: false,
     addOpen: false,
     archiveOpen: false,
+    focusHelpOpen: false,
     draggedId: null
   };
 }
@@ -99,9 +101,19 @@ function render() {
       <section class="focus-dock" aria-label="Сводка и фокус">
         <div class="focus-area">
           <div class="section-heading">
-            <div>
-              <p class="eyebrow">Ассистент фокуса</p>
+            <div class="focus-title">
+              <div class="focus-label-row">
+                <p class="eyebrow">Ассистент фокуса</p>
+                <button
+                  class="help-button"
+                  type="button"
+                  data-action="toggle-focus-help"
+                  aria-label="Как работает Ассистент фокуса"
+                  aria-expanded="${state.focusHelpOpen ? "true" : "false"}"
+                >?</button>
+              </div>
               <h2>Что закрыть первым</h2>
+              ${state.focusHelpOpen ? focusHelpMarkup() : ""}
             </div>
             <label class="switch">
               <input type="checkbox" data-action="toggle-focus" ${state.focusOnly ? "checked" : ""} />
@@ -222,6 +234,24 @@ function emptyFocusMarkup() {
       <strong>Нет активных карточек</strong>
       <span>Добавьте задачу, и ассистент начнет выбирать, что закрывать первым.</span>
     </div>
+  `;
+}
+
+function focusHelpMarkup() {
+  return `
+    <aside class="focus-help-popover" aria-label="Объяснение Ассистента фокуса">
+      <button class="icon-button mini" type="button" data-action="close-focus-help" aria-label="Закрыть объяснение">×</button>
+      <strong>Как выбирается первая карточка</strong>
+      <p>Ассистент считает риск по сигналам потока: сколько дней карточка стоит в колонке, есть ли блокировка, перегружен ли WIP, близко ли срок, какой приоритет и насколько карточка маленькая.</p>
+      <div class="help-signal-grid">
+        <span>Возраст</span>
+        <span>Блокер</span>
+        <span>WIP</span>
+        <span>Срок</span>
+        <span>Приоритет</span>
+        <span>Размер</span>
+      </div>
+    </aside>
   `;
 }
 
@@ -493,14 +523,22 @@ function handleAction(action, target) {
   if (action === "toggle-focus") {
     state.focusOnly = target.checked;
   }
+  if (action === "toggle-focus-help") {
+    state.focusHelpOpen = !state.focusHelpOpen;
+  }
+  if (action === "close-focus-help") {
+    state.focusHelpOpen = false;
+  }
   if (action === "open-add") {
     state.addOpen = true;
+    state.focusHelpOpen = false;
   }
   if (action === "close-add") {
     state.addOpen = false;
   }
   if (action === "open-archive") {
     state.archiveOpen = true;
+    state.focusHelpOpen = false;
   }
   if (action === "close-archive") {
     state.archiveOpen = false;

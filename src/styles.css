@@ -249,6 +249,17 @@ button {
   padding: 0;
 }
 
+.focus-title {
+  position: relative;
+  min-width: 0;
+}
+
+.focus-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
 .section-heading {
   display: flex;
   align-items: center;
@@ -278,6 +289,92 @@ button {
   font-weight: 760;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+.help-button {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 760;
+  transition:
+    transform 420ms var(--spring),
+    color 420ms var(--spring),
+    border-color 420ms var(--spring),
+    background 420ms var(--spring);
+}
+
+.help-button:hover,
+.help-button[aria-expanded="true"] {
+  transform: translateY(-1px);
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.focus-help-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 5;
+  width: min(440px, calc(100vw - 44px));
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 16px;
+  background: rgba(251, 250, 246, 0.96);
+  box-shadow: var(--shadow);
+}
+
+.focus-help-popover::before {
+  position: absolute;
+  top: -7px;
+  left: 34px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.86);
+  border-left: 1px solid rgba(255, 255, 255, 0.86);
+  background: rgba(251, 250, 246, 0.96);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.focus-help-popover strong {
+  display: block;
+  padding-right: 36px;
+  font-size: 0.95rem;
+  font-weight: 760;
+}
+
+.focus-help-popover p {
+  margin: 8px 0 11px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.help-signal-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.help-signal-grid span {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(23, 24, 23, 0.06);
+  font-size: 0.66rem;
+  font-weight: 760;
 }
 
 .switch {
@@ -1031,6 +1128,15 @@ button {
   border-radius: 999px;
   background: rgba(23, 24, 23, 0.07);
   font-size: 1.2rem;
+}
+
+.icon-button.mini {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  font-size: 0.95rem;
 }
 
 @media (max-width: 1500px) {

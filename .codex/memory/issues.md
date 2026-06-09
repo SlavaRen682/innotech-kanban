@@ -30,6 +30,12 @@ Observed: the selected-card action grid had an unused sixth slot, while `В ар
 
 Verified fix: added `restoreCard`, an `Архив` action in the free slot and commandbar, archive modal list, and `Вернуть` controls. Tests cover restoration to the original column. Playwright confirms archive/open/restore flow, selected restored card, desktop/mobile no overflow, and clean console.
 
+## 2026-06-09: Focus Assistant Needed An Explanation
+
+Observed: user noted the `Ассистент фокуса` label needed a nearby popup explaining how recommendations work.
+
+Verified fix: added a `?` help button next to the assistant label and a compact popover explaining age, blocker, WIP, due date, priority, and size signals. Playwright confirms open/close behavior, all signals visible, desktop/mobile no overflow, automatic close before add modal, and clean console.
+
 ## Observed Facts
 
 - 

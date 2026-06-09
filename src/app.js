@@ -74,30 +74,31 @@ function render() {
   const selected = getSelectedCard(focusCards);
 
   root.innerHTML = `
-    <header class="topbar reveal">
-      <div>
-        <p class="eyebrow">Канбан с фокусом</p>
-        <h1>Лаборатория потока</h1>
+    <header class="appbar reveal">
+      <div class="brand-lockup">
+        <strong>Лаборатория потока</strong>
+        <span>Мок-доска с Ассистентом фокуса</span>
       </div>
-      <div class="topbar-actions">
+      <div class="topbar-actions" aria-label="Действия доски">
         ${buttonMarkup("+1 день", "age-day", "plus")}
         ${buttonMarkup("Новая задача", "open-add", "plus")}
         ${buttonMarkup("Сбросить демо", "reset", "reset", "secondary")}
       </div>
     </header>
 
-    <main class="workspace">
-      <section class="control-panel double-bezel reveal">
-        <div class="bezel-core control-grid">
-          ${metricMarkup("Риск потока", `${summary.stale + summary.blocked + summary.overloaded}`, "зависшие + блокеры + WIP")}
-          ${metricMarkup("WIP-перегруз", `${summary.overloaded}`, "колонки выше лимита")}
-          ${metricMarkup("Срок близко", `${summary.dueSoon}`, "карточки на сегодня/завтра")}
-          ${metricMarkup("Готово", `${summary.done}`, "закрыто в демо")}
-        </div>
-      </section>
+    <main class="board-workbench">
+      <aside class="left-rail reveal" aria-label="Панель ассистента">
+        <section class="control-panel double-bezel">
+          <div class="bezel-core control-grid">
+            ${metricMarkup("Риск", `${summary.stale + summary.blocked + summary.overloaded}`, "зависшие + блокеры + WIP")}
+            ${metricMarkup("WIP", `${summary.overloaded}`, "перегруз")}
+            ${metricMarkup("Срок", `${summary.dueSoon}`, "сегодня/завтра")}
+            ${metricMarkup("Готово", `${summary.done}`, "закрыто")}
+          </div>
+        </section>
 
-      <section class="focus-panel double-bezel reveal">
-        <div class="bezel-core">
+        <section class="focus-panel double-bezel">
+          <div class="bezel-core">
           <div class="section-heading">
             <div>
               <p class="eyebrow">Что закрыть первым</p>
@@ -112,34 +113,23 @@ function render() {
           <div class="focus-strip">
             ${focusCards.map((item, index) => focusCardMarkup(item, index)).join("")}
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
+      </aside>
 
-      <section class="board-layout">
-        <div class="board-scroll reveal">
+      <section class="board-stage reveal">
+        <div class="board-scroll">
           <div class="board" aria-label="Канбан-доска">
             ${STATUSES.map((status) => columnMarkup(status, focusCards)).join("")}
           </div>
         </div>
-        <aside class="detail-panel double-bezel reveal">
-          <div class="bezel-core">
-            ${selected ? detailMarkup(selected) : emptyDetailMarkup()}
-          </div>
-        </aside>
       </section>
 
-      <section class="research-panel reveal">
-        <div class="research-heading">
-          <p class="eyebrow">Что нашли в ресерче</p>
-          <h2>Какие боли закрывает демо</h2>
+      <aside class="detail-panel double-bezel reveal" aria-label="Детали карточки">
+        <div class="bezel-core">
+          ${selected ? detailMarkup(selected) : emptyDetailMarkup()}
         </div>
-        <div class="research-grid">
-          ${researchSignalMarkup("Время в статусе", "Пользователи хотят видеть, сколько карточка стоит в колонке: дедлайн не всегда показывает зависание.")}
-          ${researchSignalMarkup("Понятный WIP", "Лимит полезен только когда доска объясняет перегруз и следующий ход для разгрузки.")}
-          ${researchSignalMarkup("Гравитация бэклога", "Большой бэклог превращается в склад, если старые карточки не уточнять, не делить и не архивировать.")}
-          ${researchSignalMarkup("Ценность для защиты", "Фишка видна на экране, кликается и легко объясняется преподавателю как решение найденной боли.")}
-        </div>
-      </section>
+      </aside>
     </main>
 
     ${state.addOpen ? addTaskModalMarkup() : ""}
@@ -486,17 +476,6 @@ function metricMarkup(label, value, caption) {
       <strong>${escapeHtml(value)}</strong>
       <small>${escapeHtml(caption)}</small>
     </div>
-  `;
-}
-
-function researchSignalMarkup(title, body) {
-  return `
-    <article class="research-card double-bezel">
-      <div class="bezel-core">
-        <h3>${escapeHtml(title)}</h3>
-        <p>${escapeHtml(body)}</p>
-      </div>
-    </article>
   `;
 }
 

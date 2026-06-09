@@ -1,4 +1,5 @@
 import {
+  SCORING_RULES,
   STATUSES,
   STATUS_FLOW,
   addCard,
@@ -241,17 +242,50 @@ function focusHelpMarkup() {
   return `
     <aside class="focus-help-popover" aria-label="Объяснение Ассистента фокуса">
       <button class="icon-button mini" type="button" data-action="close-focus-help" aria-label="Закрыть объяснение">×</button>
-      <strong>Как выбирается первая карточка</strong>
-      <p>Ассистент считает риск по сигналам потока: сколько дней карточка стоит в колонке, есть ли блокировка, перегружен ли WIP, близко ли срок, какой приоритет и насколько карточка маленькая.</p>
-      <div class="help-signal-grid">
-        <span>Возраст</span>
-        <span>Блокер</span>
-        <span>WIP</span>
-        <span>Срок</span>
-        <span>Приоритет</span>
-        <span>Размер</span>
+      <strong>Формула риска</strong>
+      <p class="formula-line">Оценка = max(0, возраст × ${SCORING_RULES.agePerDay} + статус + приоритет + размер + срок + зависание + блокер + WIP).</p>
+      <div class="formula-grid">
+        ${formulaGroupMarkup("Статус", statusScoreItems())}
+        ${formulaGroupMarkup("Приоритет", [
+          ["низкий", SCORING_RULES.priority.low],
+          ["средний", SCORING_RULES.priority.medium],
+          ["высокий", SCORING_RULES.priority.high]
+        ])}
+        ${formulaGroupMarkup("Размер", [
+          ["S", SCORING_RULES.size.S],
+          ["M", SCORING_RULES.size.M],
+          ["L", SCORING_RULES.size.L]
+        ])}
+        ${formulaGroupMarkup("Срок", [
+          ["просрочен", SCORING_RULES.due.overdue],
+          ["0-1 дн.", SCORING_RULES.due.oneDay],
+          ["2-3 дн.", SCORING_RULES.due.threeDays],
+          ["позже", SCORING_RULES.due.later]
+        ])}
+      </div>
+      <div class="formula-bonus-row">
+        <span>зависла +${SCORING_RULES.stale}</span>
+        <span>блокер +${SCORING_RULES.blocked}</span>
+        <span>WIP перегружен +${SCORING_RULES.wipOverLimit}</span>
+        <span>внимание от ${SCORING_RULES.tone.warning}</span>
+        <span>критично от ${SCORING_RULES.tone.critical}</span>
       </div>
     </aside>
+  `;
+}
+
+function statusScoreItems() {
+  return STATUSES.map((status) => [status.title, SCORING_RULES.status[status.id] ?? 0]);
+}
+
+function formulaGroupMarkup(title, items) {
+  return `
+    <section class="formula-group">
+      <h3>${escapeHtml(title)}</h3>
+      <div>
+        ${items.map(([label, value]) => `<span><b>${escapeHtml(label)}</b>${formatScore(value)}</span>`).join("")}
+      </div>
+    </section>
   `;
 }
 
@@ -630,6 +664,11 @@ function formatDate(value) {
     month: "2-digit",
     year: "numeric"
   }).format(new Date(value));
+}
+
+function formatScore(value) {
+  if (value > 0) return `+${value}`;
+  return String(value);
 }
 
 function priorityLabel(priority) {

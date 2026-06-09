@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  SCORING_RULES,
   addCard,
   archiveCard,
   calculateSummary,
@@ -9,6 +10,7 @@ import {
   moveCard,
   rankFocusCards,
   restoreCard,
+  scoreCard,
   splitCard,
   toggleBlocked
 } from "../src/kanban-core.js";
@@ -139,6 +141,22 @@ test("фокус поднимает зависшие, заблокированн
   assert.equal(focus[0].card.id, "card-policy-explainer");
   assert.ok(focus[0].insight.reasons.includes("заблокировано"));
   assert.ok(focus.some((item) => item.card.id === "card-aging-assistant"));
+});
+
+test("формула риска использует опубликованные коэффициенты", () => {
+  const cards = fixtureCards();
+  const card = cards.find((item) => item.id === "card-aging-assistant");
+  const insight = scoreCard(card, cards, TEST_NOW);
+  const expected =
+    insight.ageDays * SCORING_RULES.agePerDay +
+    SCORING_RULES.status.progress +
+    SCORING_RULES.priority.high +
+    SCORING_RULES.size.M +
+    SCORING_RULES.due.oneDay +
+    SCORING_RULES.stale +
+    SCORING_RULES.wipOverLimit;
+
+  assert.equal(insight.score, expected);
 });
 
 test("WIP-состояние показывает перегруженные колонки для шапки и метров", () => {

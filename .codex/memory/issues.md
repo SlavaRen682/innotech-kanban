@@ -34,7 +34,7 @@ Verified fix: added `restoreCard`, an `Архив` action in the free slot and c
 
 Observed: user noted the `Ассистент фокуса` label needed a nearby popup explaining how recommendations work.
 
-Verified fix: added a `?` help button next to the assistant label and a compact popover explaining age, blocker, WIP, due date, priority, and size signals. Playwright confirms open/close behavior, all signals visible, desktop/mobile no overflow, automatic close before add modal, and clean console.
+Verified fix: added a `?` help button next to the assistant label and a compact popover with the exact scoring formula and coefficients from `SCORING_RULES`. Playwright confirms formula coefficients are visible, desktop/mobile no overflow, and clean console.
 
 ## Observed Facts
 

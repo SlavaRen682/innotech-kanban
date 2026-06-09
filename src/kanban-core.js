@@ -45,6 +45,40 @@ export const STATUSES = [
   }
 ];
 
+export const SCORING_RULES = {
+  agePerDay: 7,
+  priority: {
+    low: 4,
+    medium: 10,
+    high: 18
+  },
+  status: {
+    backlog: 2,
+    ready: 8,
+    progress: 18,
+    review: 16,
+    done: -50
+  },
+  size: {
+    S: 8,
+    M: 4,
+    L: -3
+  },
+  due: {
+    overdue: 26,
+    oneDay: 22,
+    threeDays: 12,
+    later: 0
+  },
+  stale: 18,
+  blocked: 40,
+  wipOverLimit: 15,
+  tone: {
+    warning: 48,
+    critical: 78
+  }
+};
+
 export function nowIso() {
   return new Date().toISOString();
 }
@@ -87,14 +121,26 @@ export function scoreCard(card, cards, now = nowIso()) {
   const ageDays = getCardAgeDays(card, now);
   const dueDays = getDueDaysLeft(card, now);
   const wip = getWipState(cards, card.status);
-  const priorityScore = { low: 4, medium: 10, high: 18 }[card.priority] ?? 6;
-  const statusScore = { backlog: 2, ready: 8, progress: 18, review: 16, done: -50 }[card.status] ?? 0;
-  const sizeScore = { S: 8, M: 4, L: -3 }[card.size] ?? 0;
-  const dueScore = dueDays === null ? 0 : dueDays < 0 ? 26 : dueDays <= 1 ? 22 : dueDays <= 3 ? 12 : 0;
-  const staleScore = ageDays > (status?.staleAfterDays ?? 7) ? 18 : 0;
-  const blockedScore = card.blocked ? 40 : 0;
-  const wipScore = wip.isOverLimit ? 15 : 0;
-  const score = Math.max(0, ageDays * 7 + priorityScore + statusScore + sizeScore + dueScore + staleScore + blockedScore + wipScore);
+  const priorityScore = SCORING_RULES.priority[card.priority] ?? 6;
+  const statusScore = SCORING_RULES.status[card.status] ?? 0;
+  const sizeScore = SCORING_RULES.size[card.size] ?? 0;
+  const dueScore =
+    dueDays === null
+      ? SCORING_RULES.due.later
+      : dueDays < 0
+        ? SCORING_RULES.due.overdue
+        : dueDays <= 1
+          ? SCORING_RULES.due.oneDay
+          : dueDays <= 3
+            ? SCORING_RULES.due.threeDays
+            : SCORING_RULES.due.later;
+  const staleScore = ageDays > (status?.staleAfterDays ?? 7) ? SCORING_RULES.stale : 0;
+  const blockedScore = card.blocked ? SCORING_RULES.blocked : 0;
+  const wipScore = wip.isOverLimit ? SCORING_RULES.wipOverLimit : 0;
+  const score = Math.max(
+    0,
+    ageDays * SCORING_RULES.agePerDay + priorityScore + statusScore + sizeScore + dueScore + staleScore + blockedScore + wipScore
+  );
   const reasons = buildReasons({ card, status, ageDays, dueDays, wip });
 
   return {
@@ -102,7 +148,7 @@ export function scoreCard(card, cards, now = nowIso()) {
     score,
     ageDays,
     dueDays,
-    tone: score >= 78 || card.blocked ? "critical" : score >= 48 ? "warning" : "calm",
+    tone: score >= SCORING_RULES.tone.critical || card.blocked ? "critical" : score >= SCORING_RULES.tone.warning ? "warning" : "calm",
     recommendedAction: getRecommendedAction(card, ageDays, status),
     reasons
   };

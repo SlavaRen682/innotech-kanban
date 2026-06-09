@@ -1,12 +1,9 @@
 import {
-  DEMO_NOW,
   STATUSES,
   STATUS_FLOW,
   addCard,
-  addDays,
   archiveCard,
   calculateSummary,
-  cloneDemoCards,
   getCardAgeDays,
   getCardsByStatus,
   getDueDaysLeft,
@@ -14,13 +11,14 @@ import {
   getWipState,
   moveCard,
   moveCardInFlow,
+  nowIso,
   rankFocusCards,
   scoreCard,
   splitCard,
   toggleBlocked
 } from "./kanban-core.js";
 
-const STORAGE_KEY = "kanban-aging-demo-state-v2-ru";
+const STORAGE_KEY = "kanban-flow-board-state-v1";
 const root = document.querySelector("#app");
 
 const state = loadState();
@@ -31,11 +29,11 @@ bindGlobalEvents();
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
-    if (saved?.cards && saved?.now) {
+    if (Array.isArray(saved?.cards)) {
       return {
         cards: saved.cards,
-        now: saved.now,
-        selectedId: saved.selectedId ?? saved.cards[0]?.id,
+        now: saved.now ?? nowIso(),
+        selectedId: saved.selectedId ?? saved.cards.find((card) => !card.archivedAt)?.id ?? null,
         focusOnly: Boolean(saved.focusOnly),
         addOpen: false,
         draggedId: null
@@ -45,11 +43,10 @@ function loadState() {
     localStorage.removeItem(STORAGE_KEY);
   }
 
-  const cards = cloneDemoCards();
   return {
-    cards,
-    now: DEMO_NOW,
-    selectedId: rankFocusCards(cards, DEMO_NOW, 1)[0]?.card.id ?? cards[0]?.id,
+    cards: [],
+    now: nowIso(),
+    selectedId: null,
     focusOnly: false,
     addOpen: false,
     draggedId: null
@@ -69,6 +66,7 @@ function persist() {
 }
 
 function render() {
+  state.now = nowIso();
   const focusCards = rankFocusCards(state.cards, state.now, 3);
   const summary = calculateSummary(state.cards, state.now);
   const selected = getSelectedCard(focusCards);
@@ -79,7 +77,7 @@ function render() {
         <span class="brand-mark">К</span>
         <div>
           <strong>Лаборатория потока</strong>
-          <span>Мок-доска с Ассистентом фокуса</span>
+          <span>Рабочая канбан-доска с Ассистентом фокуса</span>
         </div>
       </div>
       <div class="toolbar-metrics" aria-label="Метрики доски">
@@ -89,9 +87,7 @@ function render() {
         ${metricMarkup("Готово", `${summary.done}`, "закрыто")}
       </div>
       <div class="toolbar-actions" aria-label="Действия доски">
-        ${buttonMarkup("+1 день", "age-day", "plus")}
         ${buttonMarkup("Новая задача", "open-add", "plus")}
-        ${buttonMarkup("Сбросить демо", "reset", "reset", "secondary")}
       </div>
     </header>
 
@@ -110,7 +106,7 @@ function render() {
             </label>
           </div>
           <div class="focus-strip">
-            ${focusCards.map((item, index) => focusCardMarkup(item, index)).join("")}
+            ${focusCards.length ? focusCards.map((item, index) => focusCardMarkup(item, index)).join("") : emptyFocusMarkup()}
           </div>
         </div>
       </section>
@@ -162,9 +158,7 @@ function columnMarkup(status, focusCards) {
           <span style="transform: scaleX(${getWipScale(wip)})"></span>
         </div>
         <div class="card-stack" data-dropzone="${status.id}">
-          ${cards
-            .map((card) => cardMarkup(card, focusIds.has(card.id), hiddenClass))
-            .join("")}
+          ${cards.length ? cards.map((card) => cardMarkup(card, focusIds.has(card.id), hiddenClass)).join("") : emptyColumnMarkup(status.id)}
         </div>
       </div>
     </section>
@@ -217,6 +211,20 @@ function focusCardMarkup(item, index) {
   `;
 }
 
+function emptyFocusMarkup() {
+  return `
+    <div class="empty-focus">
+      <strong>Нет активных карточек</strong>
+      <span>Добавьте задачу, и ассистент начнет выбирать, что закрывать первым.</span>
+    </div>
+  `;
+}
+
+function emptyColumnMarkup(statusId) {
+  const label = statusId === "backlog" ? "Пока пусто" : "Нет задач";
+  return `<div class="column-empty">${label}</div>`;
+}
+
 function detailMarkup(card) {
   const insight = scoreCard(card, state.cards, state.now);
   const status = getStatus(card.status);
@@ -255,10 +263,12 @@ function detailMarkup(card) {
 
 function emptyDetailMarkup() {
   return `
-    <section class="selected-strip">
-      <p class="eyebrow">Выбранная карточка</p>
-      <h2>Карточка не выбрана</h2>
-      <p>Добавьте задачу или сбросьте демо-данные.</p>
+    <section class="selected-strip is-empty">
+      <div class="empty-detail">
+        <p class="eyebrow">Выбранная карточка</p>
+        <h2>Карточка не выбрана</h2>
+        <p>Добавьте первую задачу, чтобы появились рекомендации и действия.</p>
+      </div>
     </section>
   `;
 }
@@ -278,11 +288,15 @@ function addTaskModalMarkup() {
           </div>
           <label>
             Название
-            <input name="title" required placeholder="Пакет для проверки преподавателем" />
+            <input name="title" required placeholder="Подготовить релиз" />
           </label>
           <label>
             Описание
             <textarea name="description" rows="3" placeholder="Что должно быть закончено?"></textarea>
+          </label>
+          <label>
+            Ответственный
+            <input name="owner" placeholder="Имя" />
           </label>
           <div class="form-row">
             <label>
@@ -309,7 +323,7 @@ function addTaskModalMarkup() {
             </label>
             <label>
               Теги
-              <input name="tags" placeholder="учеба, демо" />
+              <input name="tags" placeholder="важное, клиент" />
             </label>
           </div>
           <button class="button primary" type="submit">
@@ -374,6 +388,7 @@ function bindGlobalEvents() {
     dropzone.classList.remove("is-drag-over");
     const cardId = state.draggedId || event.dataTransfer.getData("text/plain");
     if (!cardId) return;
+    state.now = nowIso();
     state.cards = moveCard(state.cards, cardId, dropzone.dataset.dropzone, state.now);
     state.selectedId = cardId;
     state.draggedId = null;
@@ -385,6 +400,7 @@ function bindGlobalEvents() {
     if (!form) return;
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
+    state.now = nowIso();
     state.cards = addCard(state.cards, data, state.now);
     state.selectedId = state.cards[state.cards.length - 1]?.id;
     state.addOpen = false;
@@ -394,6 +410,7 @@ function bindGlobalEvents() {
 
 function handleAction(action, target) {
   const cardId = target.dataset.cardId || state.selectedId;
+  state.now = nowIso();
 
   if (action === "select" && target.dataset.cardId) {
     state.selectedId = target.dataset.cardId;
@@ -401,20 +418,11 @@ function handleAction(action, target) {
   if (action === "toggle-focus") {
     state.focusOnly = target.checked;
   }
-  if (action === "age-day") {
-    state.now = addDays(state.now, 1);
-  }
   if (action === "open-add") {
     state.addOpen = true;
   }
   if (action === "close-add") {
     state.addOpen = false;
-  }
-  if (action === "reset") {
-    state.cards = cloneDemoCards();
-    state.now = DEMO_NOW;
-    state.focusOnly = false;
-    state.selectedId = rankFocusCards(state.cards, state.now, 1)[0]?.card.id;
   }
   if (action === "move-prev") {
     state.cards = moveCardInFlow(state.cards, cardId, "prev", state.now);

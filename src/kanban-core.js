@@ -41,146 +41,23 @@ export const STATUSES = [
     shortTitle: "Готово",
     wipLimit: null,
     staleAfterDays: 30,
-    policy: "Закрытые карточки остаются видимыми, чтобы показать историю демо."
+    policy: "Закрытые карточки остаются видимыми, чтобы сохранить историю работы."
   }
 ];
 
-export const DEMO_NOW = "2026-06-09T09:00:00.000Z";
-
-export const demoCards = [
-  {
-    id: "card-reddit-research",
-    title: "Сводка болей из Reddit",
-    description: "Превратить найденные проблемы пользователей в защищаемую уникальную фишку.",
-    status: "review",
-    priority: "high",
-    size: "S",
-    owner: "Захар",
-    enteredAt: "2026-06-05T11:00:00.000Z",
-    dueDate: "2026-06-09",
-    tags: ["ресерч", "защита"],
-    blocked: false,
-    source: "Пользователи просят видеть время в статусе, WIP-перегруз и зависшие задачи."
-  },
-  {
-    id: "card-drag-shell",
-    title: "Кликабельный каркас доски",
-    description: "Сделать колонки, drag/drop, выбор карточки и сохранение состояния.",
-    status: "progress",
-    priority: "high",
-    size: "M",
-    owner: "Захар",
-    enteredAt: "2026-06-06T10:30:00.000Z",
-    dueDate: "2026-06-11",
-    tags: ["ui", "клики"],
-    blocked: false,
-    source: "Демку для учебы нужно реально покликать, а не просто показать скриншот."
-  },
-  {
-    id: "card-aging-assistant",
-    title: "Ассистент фокуса",
-    description: "Оценивать карточки по возрасту, статусу, WIP, приоритету и риску дедлайна.",
-    status: "progress",
-    priority: "high",
-    size: "M",
-    owner: "Захар",
-    enteredAt: "2026-06-04T08:15:00.000Z",
-    dueDate: "2026-06-10",
-    tags: ["фишка", "поток"],
-    blocked: false,
-    source: "Время в статусе лучше показывает зависание, чем искусственные дедлайны."
-  },
-  {
-    id: "card-policy-explainer",
-    title: "Объяснение WIP-лимитов",
-    description: "Показать, почему колонка перегружена и какую карточку двигать первой.",
-    status: "review",
-    priority: "medium",
-    size: "S",
-    owner: "Захар",
-    enteredAt: "2026-06-03T14:00:00.000Z",
-    dueDate: "2026-06-12",
-    tags: ["wip", "ясность"],
-    blocked: true,
-    source: "Канбан-инструменты часто показывают WIP-лимит, но не объясняют следующий ход."
-  },
-  {
-    id: "card-defense-story",
-    title: "История для защиты",
-    description: "Собрать короткое объяснение: проблема, флоу, алгоритм и шаги демо.",
-    status: "ready",
-    priority: "high",
-    size: "S",
-    owner: "Захар",
-    enteredAt: "2026-06-07T16:45:00.000Z",
-    dueDate: "2026-06-10",
-    tags: ["учеба", "защита"],
-    blocked: false,
-    source: "Уникальной фишке нужна понятная учебная аргументация."
-  },
-  {
-    id: "card-recurring-reset",
-    title: "Идея повторяющихся задач",
-    description: "Оставить автосброс и повторяемые карточки как развитие после MVP.",
-    status: "backlog",
-    priority: "medium",
-    size: "M",
-    owner: "Захар",
-    enteredAt: "2026-05-31T12:00:00.000Z",
-    dueDate: "2026-06-18",
-    tags: ["потом", "автоматизация"],
-    blocked: false,
-    source: "Повторяющиеся задачи всплыли в ресерче, но коучинг по зависаниям сильнее."
-  },
-  {
-    id: "card-visual-polish",
-    title: "Визуальная полировка",
-    description: "Применить премиальные вложенные панели, тактильные кнопки и аккуратное движение.",
-    status: "progress",
-    priority: "medium",
-    size: "L",
-    owner: "Захар",
-    enteredAt: "2026-06-08T09:10:00.000Z",
-    dueDate: "2026-06-13",
-    tags: ["визуал", "skill"],
-    blocked: false,
-    source: "Приложенный skill требует дорогой UI, а не стандартный клон Trello."
-  },
-  {
-    id: "card-kanban-basics",
-    title: "База канбана проверена",
-    description: "Подтвердить карточки, колонки, WIP-лимиты и видимость узких мест.",
-    status: "done",
-    priority: "medium",
-    size: "S",
-    owner: "Захар",
-    enteredAt: "2026-06-08T18:20:00.000Z",
-    dueDate: "2026-06-09",
-    tags: ["ресерч", "готово"],
-    blocked: false,
-    source: "Доска построена вокруг реальных идей канбан-потока."
-  }
-];
-
-export function cloneDemoCards() {
-  return demoCards.map((card) => ({ ...card, tags: [...card.tags] }));
-}
-
-export function addDays(isoDate, days) {
-  const date = new Date(isoDate);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString();
+export function nowIso() {
+  return new Date().toISOString();
 }
 
 export function getStatus(statusId) {
   return STATUSES.find((status) => status.id === statusId);
 }
 
-export function getCardAgeDays(card, now = DEMO_NOW) {
+export function getCardAgeDays(card, now = nowIso()) {
   return Math.max(0, Math.floor((new Date(now) - new Date(card.enteredAt)) / DAY_MS));
 }
 
-export function getDueDaysLeft(card, now = DEMO_NOW) {
+export function getDueDaysLeft(card, now = nowIso()) {
   if (!card.dueDate) return null;
   const due = new Date(`${card.dueDate}T00:00:00.000Z`);
   const current = new Date(now);
@@ -205,7 +82,7 @@ export function getWipState(cards, statusId) {
   };
 }
 
-export function scoreCard(card, cards, now = DEMO_NOW) {
+export function scoreCard(card, cards, now = nowIso()) {
   const status = getStatus(card.status);
   const ageDays = getCardAgeDays(card, now);
   const dueDays = getDueDaysLeft(card, now);
@@ -231,7 +108,7 @@ export function scoreCard(card, cards, now = DEMO_NOW) {
   };
 }
 
-export function rankFocusCards(cards, now = DEMO_NOW, max = 3) {
+export function rankFocusCards(cards, now = nowIso(), max = 3) {
   return cards
     .filter((card) => card.status !== "done" && !card.archivedAt)
     .map((card) => ({ card, insight: scoreCard(card, cards, now) }))
@@ -239,7 +116,7 @@ export function rankFocusCards(cards, now = DEMO_NOW, max = 3) {
     .slice(0, max);
 }
 
-export function calculateSummary(cards, now = DEMO_NOW) {
+export function calculateSummary(cards, now = nowIso()) {
   const visibleCards = cards.filter((card) => !card.archivedAt);
   const staleCards = visibleCards.filter((card) => {
     const status = getStatus(card.status);
@@ -262,7 +139,7 @@ export function calculateSummary(cards, now = DEMO_NOW) {
   };
 }
 
-export function moveCard(cards, cardId, nextStatus, now = DEMO_NOW) {
+export function moveCard(cards, cardId, nextStatus, now = nowIso()) {
   if (!STATUS_FLOW.includes(nextStatus)) return cards;
   return cards.map((card) => {
     if (card.id !== cardId || card.status === nextStatus) return card;
@@ -276,7 +153,7 @@ export function moveCard(cards, cardId, nextStatus, now = DEMO_NOW) {
   });
 }
 
-export function moveCardInFlow(cards, cardId, direction, now = DEMO_NOW) {
+export function moveCardInFlow(cards, cardId, direction, now = nowIso()) {
   const card = cards.find((item) => item.id === cardId);
   if (!card) return cards;
   const currentIndex = STATUS_FLOW.indexOf(card.status);
@@ -285,7 +162,7 @@ export function moveCardInFlow(cards, cardId, direction, now = DEMO_NOW) {
   return moveCard(cards, cardId, nextStatus, now);
 }
 
-export function toggleBlocked(cards, cardId, now = DEMO_NOW) {
+export function toggleBlocked(cards, cardId, now = nowIso()) {
   return cards.map((card) => {
     if (card.id !== cardId) return card;
     return {
@@ -296,7 +173,7 @@ export function toggleBlocked(cards, cardId, now = DEMO_NOW) {
   });
 }
 
-export function archiveCard(cards, cardId, now = DEMO_NOW) {
+export function archiveCard(cards, cardId, now = nowIso()) {
   return cards.map((card) => {
     if (card.id !== cardId) return card;
     return {
@@ -307,7 +184,7 @@ export function archiveCard(cards, cardId, now = DEMO_NOW) {
   });
 }
 
-export function splitCard(cards, cardId, now = DEMO_NOW) {
+export function splitCard(cards, cardId, now = nowIso()) {
   const original = cards.find((card) => card.id === cardId);
   if (!original) return cards;
 
@@ -323,7 +200,6 @@ export function splitCard(cards, cardId, now = DEMO_NOW) {
     blocked: false,
     parentId: cardId,
     tags: Array.from(new Set([...original.tags, "разделение"])),
-    source: "Разделено из зависшей карточки, чтобы поток снова двигался.",
     updatedAt: now
   };
 
@@ -340,23 +216,22 @@ export function splitCard(cards, cardId, now = DEMO_NOW) {
     .concat(child);
 }
 
-export function addCard(cards, input, now = DEMO_NOW) {
+export function addCard(cards, input, now = nowIso()) {
   const title = String(input.title ?? "").trim();
   if (!title) return cards;
 
   const card = {
     id: `card-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     title,
-    description: String(input.description ?? "Новая задача, добавленная во время демо.").trim(),
+    description: String(input.description ?? "").trim() || "Без описания.",
     status: STATUS_FLOW.includes(input.status) ? input.status : "ready",
     priority: ["low", "medium", "high"].includes(input.priority) ? input.priority : "medium",
     size: ["S", "M", "L"].includes(input.size) ? input.size : "M",
-    owner: String(input.owner ?? "Захар").trim() || "Захар",
+    owner: String(input.owner ?? "").trim() || "Без исполнителя",
     enteredAt: now,
     dueDate: input.dueDate || null,
     tags: normalizeTags(input.tags),
-    blocked: false,
-    source: "Создано вручную в кликабельной демке."
+    blocked: false
   };
 
   return cards.concat(card);

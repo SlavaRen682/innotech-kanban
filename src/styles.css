@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;520;650;760&display=swap");
-
 :root {
   color-scheme: light;
   --paper: #efede7;
@@ -33,7 +31,7 @@ body {
   min-height: 100dvh;
   margin: 0;
   color: var(--ink);
-  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(236, 232, 223, 0.9)),
     repeating-linear-gradient(90deg, rgba(23, 24, 23, 0.018) 0 1px, transparent 1px 72px),
@@ -369,6 +367,29 @@ button {
   border-color: var(--line-strong);
 }
 
+.empty-focus {
+  grid-column: 1 / -1;
+  display: grid;
+  min-height: 70px;
+  place-items: center start;
+  padding: 12px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.empty-focus strong {
+  font-size: 0.9rem;
+  font-weight: 760;
+}
+
+.empty-focus span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .focus-card.critical {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(197, 83, 73, 0.13));
 }
@@ -439,9 +460,14 @@ button {
   padding: 8px;
 }
 
+.selected-strip.is-empty {
+  grid-template-columns: 1fr;
+}
+
 .selected-main,
 .selected-stats,
-.selected-action-note {
+.selected-action-note,
+.empty-detail {
   min-width: 0;
   padding: 10px;
   border: 1px solid var(--line);
@@ -456,8 +482,9 @@ button {
   line-height: 1.12;
 }
 
-.selected-main p,
-.selected-action-note p {
+.selected-main p:not(.eyebrow),
+.selected-action-note p,
+.empty-detail p:not(.eyebrow) {
   display: -webkit-box;
   margin: 5px 0 0;
   overflow: hidden;
@@ -466,6 +493,12 @@ button {
   line-height: 1.4;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.empty-detail h2 {
+  margin: 0;
+  font-size: 1.04rem;
+  font-weight: 760;
 }
 
 .selected-stats {
@@ -625,6 +658,18 @@ button {
   min-height: 220px;
   border-radius: 14px;
   transition: background 420ms var(--spring);
+}
+
+.column-empty {
+  display: grid;
+  min-height: 94px;
+  place-items: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: 13px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.42);
+  font-size: 0.76rem;
+  font-weight: 760;
 }
 
 .card-stack.is-drag-over {

@@ -13,6 +13,7 @@ import {
   moveCardInFlow,
   nowIso,
   rankFocusCards,
+  restoreCard,
   scoreCard,
   splitCard,
   toggleBlocked
@@ -36,6 +37,7 @@ function loadState() {
         selectedId: saved.selectedId ?? saved.cards.find((card) => !card.archivedAt)?.id ?? null,
         focusOnly: Boolean(saved.focusOnly),
         addOpen: false,
+        archiveOpen: false,
         draggedId: null
       };
     }
@@ -49,6 +51,7 @@ function loadState() {
     selectedId: null,
     focusOnly: false,
     addOpen: false,
+    archiveOpen: false,
     draggedId: null
   };
 }
@@ -88,6 +91,7 @@ function render() {
       </div>
       <div class="toolbar-actions" aria-label="Действия доски">
         ${buttonMarkup("Новая задача", "open-add", "plus")}
+        ${buttonMarkup("Архив", "open-archive", "archive", "secondary")}
       </div>
     </header>
 
@@ -123,6 +127,7 @@ function render() {
     </main>
 
     ${state.addOpen ? addTaskModalMarkup() : ""}
+    ${state.archiveOpen ? archiveModalMarkup() : ""}
   `;
 
 }
@@ -256,6 +261,7 @@ function detailMarkup(card) {
         ${actionButtonMarkup(card.blocked ? "Разблокировать" : "Заблокировать", "toggle-blocked", "block")}
         ${actionButtonMarkup("Разделить", "split", "split")}
         ${actionButtonMarkup("В архив", "archive", "archive")}
+        ${actionButtonMarkup("Архив", "open-archive", "archive")}
       </div>
     </section>
   `;
@@ -268,6 +274,10 @@ function emptyDetailMarkup() {
         <p class="eyebrow">Выбранная карточка</p>
         <h2>Карточка не выбрана</h2>
         <p>Добавьте первую задачу, чтобы появились рекомендации и действия.</p>
+      </div>
+      <div class="action-grid empty-actions">
+        ${actionButtonMarkup("Новая задача", "open-add", "plus")}
+        ${actionButtonMarkup("Архив", "open-archive", "archive")}
       </div>
     </section>
   `;
@@ -332,6 +342,62 @@ function addTaskModalMarkup() {
           </button>
         </div>
       </form>
+    </div>
+  `;
+}
+
+function archiveModalMarkup() {
+  const archivedCards = state.cards
+    .filter((card) => card.archivedAt)
+    .sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
+
+  return `
+    <div class="modal-layer">
+      <button class="modal-backdrop" type="button" data-action="close-archive" aria-label="Закрыть архив"></button>
+      <section class="modal archive-modal" aria-label="Архив задач">
+        <div class="modal-core">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Архив</p>
+              <h2>Убранные задачи</h2>
+            </div>
+            <button class="icon-button" type="button" data-action="close-archive" aria-label="Закрыть">×</button>
+          </div>
+          <div class="archive-list">
+            ${archivedCards.length ? archivedCards.map(archiveItemMarkup).join("") : emptyArchiveMarkup()}
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function archiveItemMarkup(card) {
+  const status = getStatus(card.status);
+  return `
+    <article class="archive-item">
+      <div>
+        <span class="archive-status">${escapeHtml(status?.title ?? card.status)}</span>
+        <h3>${escapeHtml(card.title)}</h3>
+        <p>${escapeHtml(card.description)}</p>
+        <div class="archive-meta">
+          <span>${escapeHtml(card.owner)}</span>
+          <span>убрано ${escapeHtml(formatDate(card.archivedAt))}</span>
+        </div>
+      </div>
+      <button class="action-button restore-button" type="button" data-action="restore" data-card-id="${card.id}">
+        Вернуть
+        <span>›</span>
+      </button>
+    </article>
+  `;
+}
+
+function emptyArchiveMarkup() {
+  return `
+    <div class="empty-archive">
+      <strong>Архив пуст</strong>
+      <span>Карточки появятся здесь после действия «В архив».</span>
     </div>
   `;
 }
@@ -433,6 +499,12 @@ function handleAction(action, target) {
   if (action === "close-add") {
     state.addOpen = false;
   }
+  if (action === "open-archive") {
+    state.archiveOpen = true;
+  }
+  if (action === "close-archive") {
+    state.archiveOpen = false;
+  }
   if (action === "move-prev") {
     state.cards = moveCardInFlow(state.cards, cardId, "prev", state.now);
   }
@@ -448,6 +520,11 @@ function handleAction(action, target) {
   if (action === "archive") {
     state.cards = archiveCard(state.cards, cardId, state.now);
     state.selectedId = rankFocusCards(state.cards, state.now, 1)[0]?.card.id;
+  }
+  if (action === "restore" && target.dataset.cardId) {
+    state.cards = restoreCard(state.cards, target.dataset.cardId, state.now);
+    state.selectedId = target.dataset.cardId;
+    state.archiveOpen = state.cards.some((card) => card.archivedAt);
   }
 
   persistAndRender();
@@ -506,6 +583,15 @@ function dueLabel(days) {
   if (days === 0) return "сегодня";
   if (days === 1) return "завтра";
   return `осталось ${days} дн.`;
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).format(new Date(value));
 }
 
 function priorityLabel(priority) {

@@ -184,6 +184,18 @@ export function archiveCard(cards, cardId, now = nowIso()) {
   });
 }
 
+export function restoreCard(cards, cardId, now = nowIso()) {
+  return cards.map((card) => {
+    if (card.id !== cardId) return card;
+    const restoredCard = { ...card };
+    delete restoredCard.archivedAt;
+    return {
+      ...restoredCard,
+      updatedAt: now
+    };
+  });
+}
+
 export function splitCard(cards, cardId, now = nowIso()) {
   const original = cards.find((card) => card.id === cardId);
   if (!original) return cards;

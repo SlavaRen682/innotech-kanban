@@ -8,6 +8,7 @@ import {
   getWipState,
   moveCard,
   rankFocusCards,
+  restoreCard,
   splitCard,
   toggleBlocked
 } from "../src/kanban-core.js";
@@ -179,6 +180,17 @@ test("сводка реагирует на блокировку, архив и �
   assert.equal(summary.blocked, 2);
   assert.equal(summary.total, 8);
   assert.equal(summary.dueSoon >= 2, true);
+});
+
+test("восстановление возвращает архивную карточку в исходную колонку", () => {
+  const archived = archiveCard(fixtureCards(), "card-drag-shell", TEST_NOW);
+  const restored = restoreCard(archived, "card-drag-shell", TEST_NOW);
+  const card = restored.find((item) => item.id === "card-drag-shell");
+
+  assert.equal(card.status, "progress");
+  assert.equal(card.archivedAt, undefined);
+  assert.equal(card.updatedAt, TEST_NOW);
+  assert.equal(getWipState(restored, "progress").count, 3);
 });
 
 test("новая карточка создается без служебных текстов", () => {

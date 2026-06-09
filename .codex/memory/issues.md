@@ -24,6 +24,12 @@ Observed: user screenshot showed the browser-native priority dropdown rendering 
 
 Verified fix: replaced priority and size `<select>` elements with custom radio-backed segment controls. Playwright confirms `selectCount=0`, form submission preserves `priority=high` and `size=L`, desktop/mobile modal widths have no horizontal overflow, and console has no warnings.
 
+## 2026-06-09: Archive Was A One-Way Action
+
+Observed: the selected-card action grid had an unused sixth slot, while `В архив` only hid cards with no UI to inspect or restore them.
+
+Verified fix: added `restoreCard`, an `Архив` action in the free slot and commandbar, archive modal list, and `Вернуть` controls. Tests cover restoration to the original column. Playwright confirms archive/open/restore flow, selected restored card, desktop/mobile no overflow, and clean console.
+
 ## Observed Facts
 
 - 

@@ -46,36 +46,51 @@ export const STATUSES = [
 ];
 
 export const SCORING_RULES = {
-  agePerDay: 7,
+  serviceLevel: {
+    probability: 85,
+    expectedDays: {
+      S: 2,
+      M: 4,
+      L: 7
+    },
+    defaultExpectedDays: 4
+  },
+  ageRatio: {
+    weight: 45,
+    cap: 1.4,
+    near: 0.75,
+    nearBonus: 8,
+    overBonus: 22
+  },
   priority: {
-    low: 4,
-    medium: 10,
-    high: 18
+    low: 5,
+    medium: 11,
+    high: 20
   },
   status: {
-    backlog: 2,
+    backlog: -8,
     ready: 8,
-    progress: 18,
-    review: 16,
-    done: -50
+    progress: 24,
+    review: 28,
+    done: -100
   },
   size: {
     S: 8,
-    M: 4,
-    L: -3
+    M: 2,
+    L: -8
   },
   due: {
-    overdue: 26,
-    oneDay: 22,
-    threeDays: 12,
+    overdue: 34,
+    oneDay: 24,
+    threeDays: 14,
     later: 0
   },
-  stale: 18,
-  blocked: 40,
-  wipOverLimit: 15,
+  stale: 14,
+  blocked: 45,
+  wipOverLimit: 18,
   tone: {
-    warning: 48,
-    critical: 78
+    warning: 60,
+    critical: 95
   }
 };
 
@@ -99,6 +114,17 @@ export function getDueDaysLeft(card, now = nowIso()) {
   return Math.round((due.getTime() - currentDay) / DAY_MS);
 }
 
+export function getExpectedCycleDays(card) {
+  return SCORING_RULES.serviceLevel.expectedDays[card.size] ?? SCORING_RULES.serviceLevel.defaultExpectedDays;
+}
+
+export function getFlowAgeDays(card, now = nowIso()) {
+  const startedAt = getFlowStartedAt(card);
+  if (!startedAt) return 0;
+  const endAt = card.status === "done" && card.finishedAt ? card.finishedAt : now;
+  return Math.max(0, Math.floor((new Date(endAt) - new Date(startedAt)) / DAY_MS));
+}
+
 export function getCardsByStatus(cards, statusId) {
   return cards.filter((card) => card.status === statusId && !card.archivedAt);
 }
@@ -118,9 +144,19 @@ export function getWipState(cards, statusId) {
 
 export function scoreCard(card, cards, now = nowIso()) {
   const status = getStatus(card.status);
-  const ageDays = getCardAgeDays(card, now);
+  const columnAgeDays = getCardAgeDays(card, now);
+  const flowAgeDays = getFlowAgeDays(card, now);
+  const expectedDays = getExpectedCycleDays(card);
+  const ageRatio = expectedDays > 0 ? flowAgeDays / expectedDays : 0;
   const dueDays = getDueDaysLeft(card, now);
   const wip = getWipState(cards, card.status);
+  const ageScore = Math.round(Math.min(ageRatio, SCORING_RULES.ageRatio.cap) * SCORING_RULES.ageRatio.weight);
+  const serviceLevelScore =
+    ageRatio >= 1
+      ? SCORING_RULES.ageRatio.overBonus
+      : ageRatio >= SCORING_RULES.ageRatio.near
+        ? SCORING_RULES.ageRatio.nearBonus
+        : 0;
   const priorityScore = SCORING_RULES.priority[card.priority] ?? 6;
   const statusScore = SCORING_RULES.status[card.status] ?? 0;
   const sizeScore = SCORING_RULES.size[card.size] ?? 0;
@@ -134,22 +170,39 @@ export function scoreCard(card, cards, now = nowIso()) {
           : dueDays <= 3
             ? SCORING_RULES.due.threeDays
             : SCORING_RULES.due.later;
-  const staleScore = ageDays > (status?.staleAfterDays ?? 7) ? SCORING_RULES.stale : 0;
+  const staleScore = columnAgeDays > (status?.staleAfterDays ?? 7) ? SCORING_RULES.stale : 0;
   const blockedScore = card.blocked ? SCORING_RULES.blocked : 0;
   const wipScore = wip.isOverLimit ? SCORING_RULES.wipOverLimit : 0;
   const score = Math.max(
     0,
-    ageDays * SCORING_RULES.agePerDay + priorityScore + statusScore + sizeScore + dueScore + staleScore + blockedScore + wipScore
+    ageScore +
+      serviceLevelScore +
+      priorityScore +
+      statusScore +
+      sizeScore +
+      dueScore +
+      staleScore +
+      blockedScore +
+      wipScore
   );
-  const reasons = buildReasons({ card, status, ageDays, dueDays, wip });
+  const reasons = buildReasons({ card, status, columnAgeDays, flowAgeDays, expectedDays, ageRatio, dueDays, wip });
 
   return {
     cardId: card.id,
     score,
-    ageDays,
+    ageDays: flowAgeDays,
+    columnAgeDays,
+    flowAgeDays,
+    expectedDays,
+    ageRatio,
     dueDays,
-    tone: score >= SCORING_RULES.tone.critical || card.blocked ? "critical" : score >= SCORING_RULES.tone.warning ? "warning" : "calm",
-    recommendedAction: getRecommendedAction(card, ageDays, status),
+    tone:
+      score >= SCORING_RULES.tone.critical || card.blocked || ageRatio >= 1
+        ? "critical"
+        : score >= SCORING_RULES.tone.warning || ageRatio >= SCORING_RULES.ageRatio.near
+          ? "warning"
+          : "calm",
+    recommendedAction: getRecommendedAction(card, { columnAgeDays, ageRatio, status }),
     reasons
   };
 }
@@ -189,13 +242,25 @@ export function moveCard(cards, cardId, nextStatus, now = nowIso()) {
   if (!STATUS_FLOW.includes(nextStatus)) return cards;
   return cards.map((card) => {
     if (card.id !== cardId || card.status === nextStatus) return card;
-    return {
+    const updatedCard = {
       ...card,
       status: nextStatus,
       enteredAt: now,
       blocked: nextStatus === "done" ? false : card.blocked,
       updatedAt: now
     };
+    if (!updatedCard.createdAt) updatedCard.createdAt = card.createdAt ?? card.enteredAt ?? now;
+    if (nextStatus === "backlog") {
+      delete updatedCard.startedAt;
+      delete updatedCard.finishedAt;
+    } else if (nextStatus === "done") {
+      updatedCard.startedAt = card.startedAt ?? card.createdAt ?? card.enteredAt ?? now;
+      updatedCard.finishedAt = now;
+    } else {
+      updatedCard.startedAt = card.startedAt ?? now;
+      delete updatedCard.finishedAt;
+    }
+    return updatedCard;
   });
 }
 
@@ -254,6 +319,8 @@ export function splitCard(cards, cardId, now = nowIso()) {
     status: "ready",
     priority: original.priority,
     size: "S",
+    createdAt: now,
+    startedAt: now,
     enteredAt: now,
     blocked: false,
     parentId: cardId,
@@ -286,34 +353,48 @@ export function addCard(cards, input, now = nowIso()) {
     priority: ["low", "medium", "high"].includes(input.priority) ? input.priority : "medium",
     size: ["S", "M", "L"].includes(input.size) ? input.size : "M",
     owner: String(input.owner ?? "").trim() || "Без исполнителя",
+    createdAt: now,
+    startedAt: input.status === "backlog" ? null : now,
     enteredAt: now,
     dueDate: input.dueDate || null,
     tags: normalizeTags(input.tags),
-    blocked: false
+    blocked: false,
+    updatedAt: now
   };
 
   return cards.concat(card);
 }
 
-function buildReasons({ card, status, ageDays, dueDays, wip }) {
-  const reasons = [`${ageDays} дн. в «${status?.shortTitle ?? card.status}»`];
+function buildReasons({ card, status, columnAgeDays, flowAgeDays, expectedDays, ageRatio, dueDays, wip }) {
+  const reasons =
+    card.status === "backlog"
+      ? [`${columnAgeDays} дн. в «${status?.shortTitle ?? card.status}»`]
+      : [`${flowAgeDays}/${expectedDays} дн. SLE`, `${columnAgeDays} дн. в «${status?.shortTitle ?? card.status}»`];
+  if (ageRatio >= 1) reasons.push("выше SLE");
+  if (ageRatio >= SCORING_RULES.ageRatio.near && ageRatio < 1) reasons.push("близко к SLE");
   if (card.blocked) reasons.push("заблокировано");
   if (wip.isOverLimit) reasons.push(`WIP ${wip.count}/${wip.limit}`);
   if (dueDays !== null && dueDays < 0) reasons.push("просрочено");
   if (dueDays !== null && dueDays >= 0 && dueDays <= 1) reasons.push("срок близко");
-  if (ageDays > (status?.staleAfterDays ?? 7)) reasons.push("зависла");
+  if (columnAgeDays > (status?.staleAfterDays ?? 7)) reasons.push("зависла в колонке");
   if (card.priority === "high") reasons.push("высокий приоритет");
   if (card.size === "S") reasons.push("быстро закрыть");
   return reasons.slice(0, 5);
 }
 
-function getRecommendedAction(card, ageDays, status) {
+function getRecommendedAction(card, { columnAgeDays, ageRatio, status }) {
   if (card.blocked) return "разблокировать или откатить";
   if (card.status === "review") return "закрыть проверку";
-  if (card.status === "progress" && ageDays > (status?.staleAfterDays ?? 3)) return "разделить или закрыть";
+  if (card.size === "L" && ageRatio >= SCORING_RULES.ageRatio.near) return "разделить до SLE";
+  if (card.status === "progress" && (ageRatio >= 1 || columnAgeDays > (status?.staleAfterDays ?? 3))) return "разделить или закрыть";
   if (card.status === "progress") return "закончить перед новой задачей";
   if (card.status === "ready") return "взять после освобождения WIP";
   return "уточнить объем";
+}
+
+function getFlowStartedAt(card) {
+  if (card.status === "backlog" && !card.startedAt) return null;
+  return card.startedAt ?? card.createdAt ?? card.enteredAt;
 }
 
 function normalizeTags(tags) {

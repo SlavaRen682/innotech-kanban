@@ -5,7 +5,6 @@ import {
   addCard,
   archiveCard,
   calculateSummary,
-  getCardAgeDays,
   getCardsByStatus,
   getDueDaysLeft,
   getStatus,
@@ -243,8 +242,18 @@ function focusHelpMarkup() {
     <aside class="focus-help-popover" aria-label="Объяснение Ассистента фокуса">
       <button class="icon-button mini" type="button" data-action="close-focus-help" aria-label="Закрыть объяснение">×</button>
       <strong>Формула риска</strong>
-      <p class="formula-line">Оценка = max(0, возраст × ${SCORING_RULES.agePerDay} + статус + приоритет + размер + срок + зависание + блокер + WIP).</p>
+      <p class="formula-line">Оценка = max(0, min(возраст / SLE, ${formatRatio(SCORING_RULES.ageRatio.cap)}) × ${SCORING_RULES.ageRatio.weight} + бонус SLE + стадия + приоритет + размер + срок + зависание + блокер + WIP).</p>
       <div class="formula-grid">
+        ${formulaGroupMarkup("SLE 85%", [
+          ["S", `${SCORING_RULES.serviceLevel.expectedDays.S} дн.`],
+          ["M", `${SCORING_RULES.serviceLevel.expectedDays.M} дн.`],
+          ["L", `${SCORING_RULES.serviceLevel.expectedDays.L} дн.`]
+        ])}
+        ${formulaGroupMarkup("Возраст", [
+          ["75% SLE", SCORING_RULES.ageRatio.nearBonus],
+          ["100% SLE", SCORING_RULES.ageRatio.overBonus],
+          ["потолок", `${formatRatio(SCORING_RULES.ageRatio.cap)}x`]
+        ])}
         ${formulaGroupMarkup("Статус", statusScoreItems())}
         ${formulaGroupMarkup("Приоритет", [
           ["низкий", SCORING_RULES.priority.low],
@@ -264,7 +273,7 @@ function focusHelpMarkup() {
         ])}
       </div>
       <div class="formula-bonus-row">
-        <span>зависла +${SCORING_RULES.stale}</span>
+        <span>зависла в колонке +${SCORING_RULES.stale}</span>
         <span>блокер +${SCORING_RULES.blocked}</span>
         <span>WIP перегружен +${SCORING_RULES.wipOverLimit}</span>
         <span>внимание от ${SCORING_RULES.tone.warning}</span>
@@ -283,7 +292,7 @@ function formulaGroupMarkup(title, items) {
     <section class="formula-group">
       <h3>${escapeHtml(title)}</h3>
       <div>
-        ${items.map(([label, value]) => `<span><b>${escapeHtml(label)}</b>${formatScore(value)}</span>`).join("")}
+        ${items.map(([label, value]) => `<span><b>${escapeHtml(label)}</b>${formatFormulaValue(value)}</span>`).join("")}
       </div>
     </section>
   `;
@@ -310,7 +319,7 @@ function detailMarkup(card) {
       </div>
       <div class="selected-stats">
         ${detailStatMarkup("Статус", status?.title ?? card.status)}
-        ${detailStatMarkup("Возраст", `${getCardAgeDays(card, state.now)} дн.`)}
+        ${detailStatMarkup("Возраст/SLE", `${insight.flowAgeDays}/${insight.expectedDays} дн.`)}
         ${detailStatMarkup("Срок", dueLabel(due))}
         ${detailStatMarkup("Оценка", `${Math.round(insight.score)}`)}
       </div>
@@ -669,6 +678,14 @@ function formatDate(value) {
 function formatScore(value) {
   if (value > 0) return `+${value}`;
   return String(value);
+}
+
+function formatFormulaValue(value) {
+  return typeof value === "number" ? formatScore(value) : escapeHtml(value);
+}
+
+function formatRatio(value) {
+  return String(value).replace(".", ",");
 }
 
 function priorityLabel(priority) {

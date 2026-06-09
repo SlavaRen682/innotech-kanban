@@ -9,28 +9,44 @@
 - первый запуск открывает пустую рабочую доску без подготовленных карточек;
 - пользователь создает карточки через `Новая задача`;
 - состояние сохраняется в `localStorage` под ключом `kanban-flow-board-state-v1`;
-- фиксированной даты, кнопки `+1 день`, сброса сценария и seed-данных больше нет;
-- Ассистент фокуса ранжирует реальные пользовательские карточки по возрасту в статусе, блокировке, WIP-перегрузу, приоритету, сроку и размеру;
+- фиксированной даты, кнопки `+1 день`, сброса сценария и seed-данных нет;
 - доступны drag/drop, выбор карточки, движение вперед/назад, блокировка, разделение и архив;
-- `Архив` доступен в свободном слоте selected-card action grid и в commandbar; архивные карточки можно вернуть кнопкой `Вернуть`, они появляются в прежней колонке;
+- `Архив` доступен в selected-card action grid и в commandbar; архивные карточки можно вернуть кнопкой `Вернуть`;
 - форма создания использует radio-backed segment controls для приоритета и размера, поэтому системные dropdown меню не появляются;
-- `?` рядом с `Ассистент фокуса` открывает popover с точной формулой ранжирования и коэффициентами из `SCORING_RULES`;
 - UI остается чистой доской: commandbar, компактный ассистент, selected-card strip и full-width columns.
+
+## Ассистент Фокуса
+
+Ассистент фокуса перешел со статичной формулы `возраст * 7` на SLE-модель:
+
+`Оценка = max(0, min(возраст / SLE, 1.4) * 45 + бонус SLE + стадия + приоритет + размер + срок + зависание + блокер + WIP)`.
+
+Стартовые SLE:
+
+- S = 2 дня;
+- M = 4 дня;
+- L = 7 дней.
+
+Карточка хранит:
+
+- `enteredAt`: вход в текущую колонку;
+- `startedAt`: вход в рабочий поток;
+- `finishedAt`: выход из рабочего потока.
+
+Обоснование модели и источники: `docs/research/focus-scoring-model.md`.
 
 Backend, авторизация, база данных и multi-user sync не добавлялись, потому что это отдельное архитектурное решение.
 
 ## Verification Status
 
-- `npm run build` проходит: lint + 7 Node tests.
-- `rg` по старым demo/mock controls чистый: нет `мок`, `демо`, `+1 день`, `Сбросить демо`, `cloneDemo`, `DEMO`.
+- `npm run build` проходит: lint + 13 Node tests.
 - Playwright MCP smoke прошел:
-  - clean first-run: 0 карточек, 5 колонок;
-  - добавление карточки через форму работает;
-  - `Вперед` переводит созданную карточку в `В работе`;
-  - состояние сохраняется в `kanban-flow-board-state-v1`;
-  - mobile 390px: `scrollWidth === clientWidth`;
-  - console после удаления внешнего font import: 0 errors, 0 warnings.
-- Свежий скрин: `screenshots/kanban-prod-1440.png` (папка ignored).
-- После фикса формы свежий скрин: `screenshots/kanban-form-segments-1440.png` (папка ignored). Playwright подтвердил отсутствие `.modal select`, корректное сохранение `priority`/`size`, desktop/mobile без overflow и чистую консоль.
-- После добавления архива свежий скрин: `screenshots/kanban-archive-open-1440.png` (папка ignored). Playwright подтвердил archive/restore flow, desktop/mobile без overflow и чистую консоль.
-- После уточнения объяснения ассистента свежий скрин: `screenshots/kanban-focus-formula-1440.png` (папка ignored). Playwright подтвердил формулу и коэффициенты, desktop/mobile без overflow и чистую консоль.
+  - SLE-formula popover открывается рядом с `Ассистент фокуса`;
+  - в popover видны `SLE 85%`, S = 2 дн., M = 4 дн., L = 7 дн., бонусы 75%/100% SLE и thresholds;
+  - ранжирование: заблокированная review-карточка выше, SLE-рискованная S-карточка выше L-карточки того же возраста;
+  - desktop 1440px без horizontal overflow;
+  - mobile 390px без horizontal overflow, popover помещается по ширине после прокрутки к ассистенту;
+  - browser console: 0 errors, 0 warnings.
+- Свежие скрины:
+  - `screenshots/kanban-sle-formula-1440.png`;
+  - `screenshots/kanban-sle-formula-390.png`.

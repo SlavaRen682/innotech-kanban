@@ -74,35 +74,34 @@ function render() {
   const selected = getSelectedCard(focusCards);
 
   root.innerHTML = `
-    <header class="appbar reveal">
-      <div class="brand-lockup">
-        <strong>Лаборатория потока</strong>
-        <span>Мок-доска с Ассистентом фокуса</span>
+    <header class="commandbar">
+      <div class="brand">
+        <span class="brand-mark">К</span>
+        <div>
+          <strong>Лаборатория потока</strong>
+          <span>Мок-доска с Ассистентом фокуса</span>
+        </div>
       </div>
-      <div class="topbar-actions" aria-label="Действия доски">
+      <div class="toolbar-metrics" aria-label="Метрики доски">
+        ${metricMarkup("Риск", `${summary.stale + summary.blocked + summary.overloaded}`, "зависшие + блокеры + WIP")}
+        ${metricMarkup("WIP", `${summary.overloaded}`, "перегруз")}
+        ${metricMarkup("Срок", `${summary.dueSoon}`, "сегодня/завтра")}
+        ${metricMarkup("Готово", `${summary.done}`, "закрыто")}
+      </div>
+      <div class="toolbar-actions" aria-label="Действия доски">
         ${buttonMarkup("+1 день", "age-day", "plus")}
         ${buttonMarkup("Новая задача", "open-add", "plus")}
         ${buttonMarkup("Сбросить демо", "reset", "reset", "secondary")}
       </div>
     </header>
 
-    <main class="board-workbench">
-      <aside class="left-rail reveal" aria-label="Панель ассистента">
-        <section class="control-panel double-bezel">
-          <div class="bezel-core control-grid">
-            ${metricMarkup("Риск", `${summary.stale + summary.blocked + summary.overloaded}`, "зависшие + блокеры + WIP")}
-            ${metricMarkup("WIP", `${summary.overloaded}`, "перегруз")}
-            ${metricMarkup("Срок", `${summary.dueSoon}`, "сегодня/завтра")}
-            ${metricMarkup("Готово", `${summary.done}`, "закрыто")}
-          </div>
-        </section>
-
-        <section class="focus-panel double-bezel">
-          <div class="bezel-core">
+    <main class="board-app">
+      <section class="focus-dock" aria-label="Сводка и фокус">
+        <div class="focus-area">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Что закрыть первым</p>
-              <h2>Ассистент фокуса</h2>
+              <p class="eyebrow">Ассистент фокуса</p>
+              <h2>Что закрыть первым</h2>
             </div>
             <label class="switch">
               <input type="checkbox" data-action="toggle-focus" ${state.focusOnly ? "checked" : ""} />
@@ -113,29 +112,23 @@ function render() {
           <div class="focus-strip">
             ${focusCards.map((item, index) => focusCardMarkup(item, index)).join("")}
           </div>
-          </div>
-        </section>
-      </aside>
+        </div>
+      </section>
 
-      <section class="board-stage reveal">
-        <div class="board-scroll">
+      ${selected ? detailMarkup(selected) : emptyDetailMarkup()}
+
+      <section class="board-frame">
+        <div class="board-scroll" tabindex="0" aria-label="Прокрутка канбан-доски">
           <div class="board" aria-label="Канбан-доска">
             ${STATUSES.map((status) => columnMarkup(status, focusCards)).join("")}
           </div>
         </div>
       </section>
-
-      <aside class="detail-panel double-bezel reveal" aria-label="Детали карточки">
-        <div class="bezel-core">
-          ${selected ? detailMarkup(selected) : emptyDetailMarkup()}
-        </div>
-      </aside>
     </main>
 
     ${state.addOpen ? addTaskModalMarkup() : ""}
   `;
 
-  hydrateReveals();
 }
 
 function getSelectedCard(focusCards) {
@@ -154,8 +147,8 @@ function columnMarkup(status, focusCards) {
   const hiddenClass = state.focusOnly ? "focus-filtered" : "";
 
   return `
-    <section class="column double-bezel ${overloadClass}" data-status="${status.id}">
-      <div class="bezel-core column-core">
+    <section class="column ${overloadClass}" data-status="${status.id}">
+      <div class="column-core">
         <div class="column-head">
           <div>
             <h3>${escapeHtml(status.title)}</h3>
@@ -232,43 +225,41 @@ function detailMarkup(card) {
   const nextDisabled = STATUS_FLOW.indexOf(card.status) === STATUS_FLOW.length - 1 ? "disabled" : "";
 
   return `
-    <div class="detail-head">
-      <p class="eyebrow">Выбранная карточка</p>
-      <h2>${escapeHtml(card.title)}</h2>
-      <p>${escapeHtml(card.description)}</p>
-    </div>
-    <div class="detail-grid">
-      ${detailStatMarkup("Статус", status?.title ?? card.status)}
-      ${detailStatMarkup("Возраст", `${getCardAgeDays(card, state.now)} дн.`)}
-      ${detailStatMarkup("Срок", dueLabel(due))}
-      ${detailStatMarkup("Оценка", `${Math.round(insight.score)}`)}
-    </div>
-    <div class="insight-box ${insight.tone}">
-      <span>Сигнал ассистента</span>
-      <strong>${escapeHtml(insight.recommendedAction)}</strong>
-      <p>${insight.reasons.map(escapeHtml).join(" / ")}</p>
-    </div>
-    <div class="source-note">
-      <span>Связь с ресерчем</span>
-      <p>${escapeHtml(card.source)}</p>
-    </div>
-    <div class="action-grid">
-      ${actionButtonMarkup("Назад", "move-prev", "left", previousDisabled)}
-      ${actionButtonMarkup("Вперед", "move-next", "right", nextDisabled)}
-      ${actionButtonMarkup(card.blocked ? "Разблокировать" : "Заблокировать", "toggle-blocked", "block")}
-      ${actionButtonMarkup("Разделить", "split", "split")}
-      ${actionButtonMarkup("В архив", "archive", "archive")}
-    </div>
+    <section class="selected-strip ${insight.tone}" aria-label="Выбранная карточка">
+      <div class="selected-main">
+        <p class="eyebrow">Выбранная карточка</p>
+        <h2>${escapeHtml(card.title)}</h2>
+        <p>${escapeHtml(card.description)}</p>
+      </div>
+      <div class="selected-stats">
+        ${detailStatMarkup("Статус", status?.title ?? card.status)}
+        ${detailStatMarkup("Возраст", `${getCardAgeDays(card, state.now)} дн.`)}
+        ${detailStatMarkup("Срок", dueLabel(due))}
+        ${detailStatMarkup("Оценка", `${Math.round(insight.score)}`)}
+      </div>
+      <div class="selected-action-note">
+        <span>Следующий ход</span>
+        <strong>${escapeHtml(insight.recommendedAction)}</strong>
+        <p>${insight.reasons.map(escapeHtml).join(" / ")}</p>
+      </div>
+      <div class="action-grid">
+        ${actionButtonMarkup("Назад", "move-prev", "left", previousDisabled)}
+        ${actionButtonMarkup("Вперед", "move-next", "right", nextDisabled)}
+        ${actionButtonMarkup(card.blocked ? "Разблокировать" : "Заблокировать", "toggle-blocked", "block")}
+        ${actionButtonMarkup("Разделить", "split", "split")}
+        ${actionButtonMarkup("В архив", "archive", "archive")}
+      </div>
+    </section>
   `;
 }
 
 function emptyDetailMarkup() {
   return `
-    <div class="detail-head">
+    <section class="selected-strip">
       <p class="eyebrow">Выбранная карточка</p>
       <h2>Карточка не выбрана</h2>
       <p>Добавьте задачу или сбросьте демо-данные.</p>
-    </div>
+    </section>
   `;
 }
 
@@ -276,8 +267,8 @@ function addTaskModalMarkup() {
   return `
     <div class="modal-layer">
       <button class="modal-backdrop" type="button" data-action="close-add" aria-label="Закрыть форму новой задачи"></button>
-      <form class="modal double-bezel" data-add-form>
-        <div class="bezel-core modal-core">
+      <form class="modal" data-add-form>
+        <div class="modal-core">
           <div class="section-heading">
             <div>
               <p class="eyebrow">Создать карточку</p>
@@ -448,25 +439,6 @@ function handleAction(action, target) {
 function persistAndRender() {
   persist();
   render();
-}
-
-function hydrateReveals() {
-  const items = root.querySelectorAll(".reveal");
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.08 }
-  );
-  items.forEach((item, index) => {
-    item.style.setProperty("--reveal-delay", `${Math.min(index * 70, 420)}ms`);
-    observer.observe(item);
-  });
 }
 
 function metricMarkup(label, value, caption) {

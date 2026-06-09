@@ -6,8 +6,8 @@
 
 Приложение — статическая кликабельная канбан-демка с Ассистентом фокуса:
 
-- чистый рабочий board workspace без hero/research-секций;
-- компактный appbar, левая панель ассистента/метрик, центральная доска и правая панель деталей;
+- чистый рабочий board UI без hero/research/side-rail/detail-panel секций;
+- commandbar, компактный ассистент, строка выбранной карточки и канбан-доска на всю ширину;
 - подготовленные учебные карточки на русском;
 - drag/drop между колонками;
 - панель деталей выбранной карточки;
@@ -25,3 +25,4 @@
 - После pure-board переделки `npm run build` проходит.
 - Browser smoke pure-board layout прошел: hero `h1` и visual research panel отсутствуют, рабочие области доски есть, клики и добавление карточки работают.
 - Mobile pure-board smoke на 390px прошел без horizontal overflow.
+- После критики layout пересобран с нуля. Playwright self-review: 2048px без horizontal overflow, 5 колонок видимы, старых layout-секций нет, клики `+1 день`/focus/split/add работают. Mobile: board начинается около 195px, `docW=390`.

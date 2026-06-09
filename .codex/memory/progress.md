@@ -9,3 +9,4 @@
 - Добавлены README, research notes, technical architecture и demo-flow docs.
 - После замечания пользователя весь видимый продуктовый слой переведен на русский, включая демо-карточки, UI-строки и docs.
 - После замечания “наполовину лендос” интерфейс переделан в чистую доску: appbar + left assistant rail + board + right detail panel.
+- После Playwright self-review старый shell признан неудачным и пересобран с нуля: commandbar + compact assistant + selected-card strip + full-width board.

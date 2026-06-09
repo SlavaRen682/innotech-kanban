@@ -18,6 +18,12 @@ Observed: user rejected the `+1 день` control and mock/demo semantics. Produ
 
 Verified fix: removed seed exports and fixed date simulation, changed first-run to an empty board, switched to current timestamps and `kanban-flow-board-state-v1`, removed reset/age controls, updated docs/tests, ignored screenshots, and removed external font loading. `npm run build`, `rg` for old strings, Playwright first-run/add/move/mobile smoke, and console check all pass.
 
+## 2026-06-09: Native Select Broke The Modal UI
+
+Observed: user screenshot showed the browser-native priority dropdown rendering as a dark system menu over the polished modal.
+
+Verified fix: replaced priority and size `<select>` elements with custom radio-backed segment controls. Playwright confirms `selectCount=0`, form submission preserves `priority=high` and `size=L`, desktop/mobile modal widths have no horizontal overflow, and console has no warnings.
+
 ## Observed Facts
 
 - 

@@ -299,22 +299,22 @@ function addTaskModalMarkup() {
             <input name="owner" placeholder="Имя" />
           </label>
           <div class="form-row">
-            <label>
-              Приоритет
-              <select name="priority">
-                <option value="high">Высокий</option>
-                <option value="medium" selected>Средний</option>
-                <option value="low">Низкий</option>
-              </select>
-            </label>
-            <label>
-              Размер
-              <select name="size">
-                <option value="S">S</option>
-                <option value="M" selected>M</option>
-                <option value="L">L</option>
-              </select>
-            </label>
+            <fieldset class="segment-field">
+              <legend>Приоритет</legend>
+              <div class="segment-control priority-options">
+                ${radioOptionMarkup("priority", "high", "Высокий")}
+                ${radioOptionMarkup("priority", "medium", "Средний", true)}
+                ${radioOptionMarkup("priority", "low", "Низкий")}
+              </div>
+            </fieldset>
+            <fieldset class="segment-field size-field">
+              <legend>Размер</legend>
+              <div class="segment-control size-options">
+                ${radioOptionMarkup("size", "S", "S")}
+                ${radioOptionMarkup("size", "M", "M", true)}
+                ${radioOptionMarkup("size", "L", "L")}
+              </div>
+            </fieldset>
           </div>
           <div class="form-row">
             <label>
@@ -333,6 +333,15 @@ function addTaskModalMarkup() {
         </div>
       </form>
     </div>
+  `;
+}
+
+function radioOptionMarkup(name, value, label, checked = false) {
+  return `
+    <label class="segment-option">
+      <input type="radio" name="${name}" value="${value}" ${checked ? "checked" : ""} />
+      <span>${escapeHtml(label)}</span>
+    </label>
   `;
 }
 

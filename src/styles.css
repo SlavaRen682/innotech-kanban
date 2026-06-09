@@ -821,8 +821,7 @@ button {
 }
 
 .modal input,
-.modal textarea,
-.modal select {
+.modal textarea {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -836,10 +835,99 @@ button {
 }
 
 .modal input:focus,
-.modal textarea:focus,
-.modal select:focus {
+.modal textarea:focus {
   border-color: rgba(69, 111, 149, 0.45);
   box-shadow: 0 0 0 4px rgba(69, 111, 149, 0.11);
+}
+
+.segment-field {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 260px;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.size-field {
+  flex: 0 1 190px;
+  min-width: min(100%, 190px);
+}
+
+.segment-field legend {
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.segment-control {
+  display: grid;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.priority-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.size-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.segment-option {
+  position: relative;
+  display: block;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.segment-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.segment-option span {
+  display: grid;
+  min-height: 42px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 760;
+  transition:
+    border-color 420ms var(--spring),
+    background 420ms var(--spring),
+    color 420ms var(--spring),
+    box-shadow 420ms var(--spring),
+    transform 420ms var(--spring);
+}
+
+.segment-option:hover span {
+  color: var(--ink);
+  background: rgba(23, 24, 23, 0.04);
+}
+
+.segment-option input:checked + span {
+  color: #fffaf0;
+  border-color: rgba(23, 24, 23, 0.88);
+  background: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
+
+.segment-option input:focus-visible + span {
+  box-shadow: 0 0 0 4px rgba(69, 111, 149, 0.14);
 }
 
 .icon-button {

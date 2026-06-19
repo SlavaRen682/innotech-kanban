@@ -1,13 +1,25 @@
 # Handoff
 
-The authoritative project is the app imported from `/Users/zakhar/Downloads/kanban_fixed 2.zip`, now implemented in `/Users/zakhar/Documents/Kanban`.
+Project lives in `/Users/zakhar/Documents/Kanban`.
 
-Current shape:
+Current important files:
 
-- `server.js` serves static files and JSON API routes.
-- `src/server/store.js` contains auth, workspace, project, task, comment, checklist, history, and deferred-task business rules.
-- `src/js/main.js` is the Russian SPA client.
-- `src/css/style.css` styles the board, panels, modal, auth, and responsive views.
-- `tests/store.test.mjs` covers the main domain rules.
+- `server.js`: API routes, auth cookie handling, upload route, static serving.
+- `src/server/postgres-store.js`: production PostgreSQL store.
+- `src/server/schema.sql`: database schema applied on server startup.
+- `src/server/uploads.js`: multipart file upload handler.
+- `src/server/store.js`: JSON/memory fallback and shared helpers.
+- `src/js/main.js`: SPA, including file input upload before task save.
 
-Local runtime data is stored in `data/db.json` and intentionally ignored by git. Use `npm run build` for lint plus tests and `PORT=5174 npm run dev` for local preview if `5173` is busy.
+Run:
+
+```bash
+docker compose up -d db
+npm run dev
+```
+
+Fallback:
+
+```bash
+npm run dev:json
+```

@@ -59,6 +59,26 @@ test("задача хранит приоритет, исполнителя, че
   assert.ok(updated.history.some((entry) => entry.action === "checklist"));
 });
 
+test("материалы задачи хранят метаданные загруженного файла", () => {
+  const { store, owner, workspace, project } = setupStore();
+
+  const task = store.createTask(owner.id, workspace.id, {
+    projectId: project.id,
+    title: "Загрузка файла",
+    materials: [{
+      name: "brief.pdf",
+      url: "/uploads/brief.pdf",
+      fileName: "brief.pdf",
+      size: 2048,
+      mimeType: "application/pdf"
+    }]
+  });
+
+  assert.equal(task.materials[0].fileName, "brief.pdf");
+  assert.equal(task.materials[0].size, 2048);
+  assert.equal(task.materials[0].mimeType, "application/pdf");
+});
+
 test("нельзя закрыть задачу с невыполненным чеклистом", () => {
   const { store, owner, workspace, project } = setupStore();
   const task = store.createTask(owner.id, workspace.id, {

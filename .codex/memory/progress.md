@@ -1,6 +1,8 @@
 # Progress
 
-- Replaced the stale board with the current `kanban_fixed 2.zip` project.
-- Added Node API, cookie auth, JSON persistence, workspaces, members by login, projects, task CRUD, drag/drop status changes, checklist guard, materials, comments, history, and deferred-task archive.
-- Added focused Node tests for registration, membership, task metadata, comments/history, checklist guard, and deferred visibility.
-- Added current README, technical architecture docs, user workflow docs, and updated project memory.
+- Replaced JSON-first backend with PostgreSQL default store.
+- Added idempotent SQL schema.
+- Added Docker Compose PostgreSQL service.
+- Added `POST /api/uploads` and frontend file input.
+- Materials now preserve file metadata: `fileName`, `size`, `mimeType`.
+- Updated README, technical docs, user workflow docs, and project memory.

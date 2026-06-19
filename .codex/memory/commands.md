@@ -1,25 +1,11 @@
 # Commands
 
-## Development
-
 ```bash
+docker compose up -d db
 npm run dev
-```
-
-Default URL: `http://localhost:5173`.
-
-Use an alternate port when needed:
-
-```bash
 PORT=5174 npm run dev
-```
-
-## Verification
-
-```bash
-npm run lint
-npm test
+npm run dev:json
 npm run build
+npm test
+npm run lint
 ```
-
-`npm run build` runs lint and tests.

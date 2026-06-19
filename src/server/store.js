@@ -400,13 +400,13 @@ function mergeDb(db) {
   };
 }
 
-function hashPassword(password) {
+export function hashPassword(password) {
   const salt = randomBytes(16).toString("hex");
   const hash = scryptSync(String(password), salt, 64).toString("hex");
   return `${salt}:${hash}`;
 }
 
-function verifyPassword(password, stored) {
+export function verifyPassword(password, stored) {
   const [salt, hash] = String(stored ?? "").split(":");
   if (!salt || !hash) return false;
   const calculated = scryptSync(String(password), salt, 64);
@@ -414,26 +414,26 @@ function verifyPassword(password, stored) {
   return expected.length === calculated.length && timingSafeEqual(expected, calculated);
 }
 
-function normalizeLogin(login) {
+export function normalizeLogin(login) {
   return String(login ?? "").trim().toLowerCase();
 }
 
-function normalizeChoice(value, values, fallback) {
+export function normalizeChoice(value, values, fallback) {
   return values.includes(value) ? value : fallback;
 }
 
-function normalizeNullableId(value) {
+export function normalizeNullableId(value) {
   const id = Number(value);
   return Number.isFinite(id) && id > 0 ? id : null;
 }
 
-function requireText(value, message) {
+export function requireText(value, message) {
   const text = String(value ?? "").trim();
   if (!text) throw httpError(400, message);
   return text;
 }
 
-function normalizeChecklist(items, store) {
+export function normalizeChecklist(items, store) {
   const list = Array.isArray(items) ? items : [];
   return list
     .map((item) => ({
@@ -445,19 +445,22 @@ function normalizeChecklist(items, store) {
     .slice(0, 12);
 }
 
-function normalizeMaterials(items, store) {
+export function normalizeMaterials(items, store) {
   const list = Array.isArray(items) ? items : [];
   return list
     .map((item) => ({
       id: Number(item.id) || store.issueId("material"),
       name: String(item.name ?? "").trim(),
-      url: String(item.url ?? "").trim()
+      url: String(item.url ?? "").trim(),
+      fileName: String(item.fileName ?? "").trim(),
+      size: Number(item.size) > 0 ? Number(item.size) : null,
+      mimeType: String(item.mimeType ?? "").trim()
     }))
     .filter((item) => item.name || item.url)
     .slice(0, 8);
 }
 
-function describeTaskUpdate(before, after) {
+export function describeTaskUpdate(before, after) {
   const changes = [];
   if (before.title !== after.title) changes.push("название");
   if (before.priority !== after.priority) changes.push("приоритет");
@@ -478,6 +481,6 @@ function getInitials(value) {
     .join("") || "?";
 }
 
-function nowIso() {
+export function nowIso() {
   return new Date().toISOString();
 }

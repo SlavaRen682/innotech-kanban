@@ -2,59 +2,78 @@
 
 ## Стек
 
-- `server.js` - Node.js HTTP-сервер без внешних зависимостей.
-- `src/server/store.js` - JSON-хранилище и бизнес-правила.
-- `src/js/main.js` - браузерное SPA, работающее через API.
-- `src/css/style.css` - стили интерфейса.
-- `tests/store.test.mjs` - тесты доменной логики.
+- `server.js` - Node.js HTTP backend and static file server.
+- `src/server/postgres-store.js` - PostgreSQL persistence for production flow.
+- `src/server/schema.sql` - idempotent database schema.
+- `src/server/store.js` - memory/JSON store and shared domain helpers for tests/fallback.
+- `src/server/uploads.js` - multipart upload handling.
+- `src/js/main.js` - browser SPA.
+- `src/css/style.css` - UI styles.
 
-## Поток данных
+## Запуск
+
+```bash
+docker compose up -d db
+npm run dev
+```
+
+Backend uses `DATABASE_URL` or default `postgres://kanban:kanban@127.0.0.1:55432/kanban`.
+
+Fallback without PostgreSQL:
+
+```bash
+npm run dev:json
+```
+
+## Data Flow
 
 ```text
 Browser SPA
   -> fetch /api/*
-  -> server.js routes
-  -> JsonStore business methods
-  -> data/db.json
+  -> server.js
+  -> PostgresStore
+  -> PostgreSQL
+
+Browser file input
+  -> POST /api/uploads
+  -> uploads/<generated-file>
+  -> task.materials[] metadata
 ```
 
-Сессия хранится в cookie `sid` с флагами `HttpOnly`, `SameSite=Lax`, `Path=/`. В браузер отдаются только публичные данные пользователя без хеша пароля.
+## Database
 
-## Модель данных
+Tables:
 
-- `users`: логин, имя, хеш пароля, дата создания.
-- `sessions`: токен сессии и пользователь.
-- `workspaces`: рабочие пространства с владельцем.
-- `members`: связь пользователей и workspace, роль `owner` или `member`.
-- `projects`: проекты внутри workspace.
-- `tasks`: задача, статус, исполнитель, срок, приоритет, тег, чеклист, материалы, состояние отложения.
-- `comments`: комментарии к задаче.
-- `history`: журнал действий по задаче.
+- `users`: login, name, password hash.
+- `sessions`: cookie session tokens.
+- `workspaces`: owner-owned workspaces.
+- `workspace_members`: owner/member membership.
+- `projects`: projects inside a workspace.
+- `tasks`: task fields, checklist JSONB, materials JSONB, deferred state.
+- `comments`: task comments.
+- `task_history`: auditable task actions.
 
-## Основные API
+## Uploads
 
-- `POST /api/register` - регистрация, создание workspace и проекта по умолчанию.
-- `POST /api/login`, `POST /api/logout`, `GET /api/session` - авторизация.
-- `GET/POST /api/workspaces` - список и создание workspace.
-- `GET/POST /api/workspaces/:id/members` - список и добавление участников по логину.
-- `GET/POST /api/projects` - проекты workspace.
-- `GET/POST /api/tasks` - список и создание задач.
-- `PUT /api/tasks/:id`, `DELETE /api/tasks/:id` - обновление и удаление задачи.
-- `POST /api/tasks/:id/move` - перемещение по колонкам.
-- `POST /api/tasks/:id/defer`, `POST /api/tasks/:id/restore` - отложить и вернуть задачу.
-- `POST /api/tasks/:id/comments` - комментарий.
-- `POST /api/tasks/:id/checklist/:itemId` - переключение пункта чеклиста.
+`POST /api/uploads` accepts one multipart file up to 10 MB. The backend stores the file in `uploads/` with a generated safe filename and returns:
 
-## Бизнес-правила
+```json
+{
+  "name": "brief.pdf",
+  "url": "/uploads/...",
+  "fileName": "brief.pdf",
+  "size": 2048,
+  "mimeType": "application/pdf"
+}
+```
 
-- Пользователь видит только workspace, где он участник.
-- Только owner может добавлять участников в workspace.
-- Задачу нельзя закрыть в `Готово`, если в чеклисте есть невыполненные пункты.
-- Отложенная задача скрывается с активной доски и показывается в режиме `Отложено`.
-- Создание, изменение, перемещение, чеклист, комментарии, отложение и возврат пишутся в историю.
+The frontend attaches that object to `task.materials`.
 
-## Ограничения учебной версии
+## Business Rules
 
-- Хранилище файловое, не рассчитано на параллельную нагрузку нескольких серверных процессов.
-- Нет восстановления пароля, ролей на уровне проекта и email-приглашений.
-- API описан в технической документации вручную, потому что проект не использует фреймворк со Swagger/OpenAPI.
+- User sees only workspaces where they are a member.
+- Only workspace owner can add members.
+- Email invitations are intentionally not implemented.
+- Task cannot move to `Готово` while checklist has incomplete items.
+- Deferred tasks are hidden from active board and visible in `Отложено`.
+- Comments, checklist updates, moves, defers, restores, creates, and edits write history entries.

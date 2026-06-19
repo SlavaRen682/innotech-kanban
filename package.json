@@ -5,9 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
+    "dev:json": "STORE_DRIVER=json node server.js",
     "start": "node server.js",
-    "lint": "node --check server.js && node --check src/server/store.js && node --check src/js/main.js && node --check tests/store.test.mjs",
+    "lint": "node --check server.js && node --check src/server/store.js && node --check src/server/postgres-store.js && node --check src/server/uploads.js && node --check src/server/app-store.js && node --check src/js/main.js && node --check tests/store.test.mjs",
     "test": "node --test tests/*.test.mjs",
     "build": "npm run lint && npm test"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "pg": "^8.22.0"
   }
 }

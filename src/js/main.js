@@ -366,6 +366,7 @@ function taskModalMarkup() {
         </div>
         <label>Чеклист<textarea name="checklist" rows="4" placeholder="Один пункт на строку">${escapeHtml((task?.checklist || []).map((item) => `${item.done ? "[x] " : ""}${item.text}`).join("\n"))}</textarea></label>
         <label>Файлы и ссылки<textarea name="materials" rows="3" placeholder="Макет | https://...\nТЗ | https://...">${escapeHtml((task?.materials || []).map((item) => `${item.name}${item.url ? ` | ${item.url}` : ""}`).join("\n"))}</textarea></label>
+        <label>Загрузить файлы<input name="files" type="file" multiple></label>
         <div class="kb-modal-actions">
           <button class="kb-modal-cancel" data-action="close-modal" type="button">Отмена</button>
           <button class="kb-modal-save" type="submit">${isEdit ? "Сохранить" : "Добавить"}</button>
@@ -553,7 +554,7 @@ async function handleSubmit(event) {
       notify("Проект создан");
     }
     if (formType === "task") {
-      await saveTask(data);
+      await saveTask(data, form);
     }
     if (formType === "comment") {
       await api(`/api/tasks/${form.dataset.taskId}/comments`, { method: "POST", body: { workspaceId: state.workspaceId, text: data.text } });
@@ -590,8 +591,9 @@ async function handleChange(event) {
   }
 }
 
-async function saveTask(data) {
+async function saveTask(data, form) {
   const original = state.tasks.find((task) => task.id === state.editingId);
+  const uploadedMaterials = await uploadTaskFiles(form);
   const payload = {
     workspaceId: state.workspaceId,
     projectId: state.projectId,
@@ -603,7 +605,7 @@ async function saveTask(data) {
     dueDate: data.dueDate,
     status: data.status,
     checklist: parseChecklist(data.checklist, original?.checklist || []),
-    materials: parseMaterials(data.materials, original?.materials || [])
+    materials: [...parseMaterials(data.materials, original?.materials || []), ...uploadedMaterials]
   };
   if (original) {
     await api(`/api/tasks/${original.id}`, { method: "PUT", body: payload });
@@ -616,6 +618,21 @@ async function saveTask(data) {
   closeModalState();
   await loadTasks();
   render();
+}
+
+async function uploadTaskFiles(form) {
+  const input = form.querySelector("input[name='files']");
+  const files = [...(input?.files || [])];
+  const uploaded = [];
+  for (const file of files) {
+    const body = new FormData();
+    body.append("file", file);
+    const response = await fetch("/api/uploads", { method: "POST", body });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Не удалось загрузить файл");
+    uploaded.push(data.file);
+  }
+  return uploaded;
 }
 
 function bindDragAndDrop() {
@@ -715,7 +732,7 @@ function parseMaterials(value, previous) {
         url: urlPart || (isUrlOnly ? namePart : "")
       };
       const old = previousByKey.get(`${material.name}|${material.url}`);
-      return { id: old?.id, ...material };
+      return old ? { ...old, ...material } : { id: old?.id, ...material };
     });
 }
 

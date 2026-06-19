@@ -1,13 +1,16 @@
 # Decisions
 
-## Use Concrete Team Workflow Features Instead Of AI Estimation
+## PostgreSQL As Default
 
-- Decision: implement auth, workspace membership, projects, checklists, materials, comments, history, and deferred tasks.
-- Reason: the user rejected abstract AI task-size estimation because it needs private project context and duplicates human responsibility. These features change observable workflow behavior and are easier to justify on defense.
-- Rejected: AI-based task sizing and context-heavy assistant scoring.
+- Decision: use PostgreSQL as the real database and keep JSON only as fallback/tests.
+- Reason: user explicitly requested real DB and backend persistence.
 
-## Keep Persistence Local And Dependency-Free
+## File Uploads On Backend Disk
 
-- Decision: use a JSON file store behind a small Node HTTP API.
-- Reason: enough for a course demo, easy to run locally, no database setup, and still supports real auth/session/API behavior.
-- Rejected: database service and heavy framework setup for this scope.
+- Decision: upload files to local `uploads/` and store metadata in task materials.
+- Reason: useful for course demo, avoids adding S3/minio complexity, and still proves server-side upload behavior.
+
+## No Email Invitations
+
+- Decision: users are added to workspace by login only.
+- Reason: user explicitly rejected email flow.

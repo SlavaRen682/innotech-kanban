@@ -1,18 +1,16 @@
 # Active Work
 
-## Current Task
+## Current State
 
-- Implement the current `kanban_fixed 2.zip` project as the source of truth, not the older focus-assistant board.
-- Build a Russian-language kanban product that supports practical team workflows: auth, workspace membership by login, projects, task attributes, checklist, materials, comments, history, and deferred tasks.
+- App is a Russian-language kanban board with Node backend, PostgreSQL store, file uploads, and browser SPA.
+- PostgreSQL is the default storage through `src/server/postgres-store.js`.
+- JSON store remains only as `npm run dev:json` fallback and for memory tests.
 
-## State
+## Verification State
 
-- The old app files were intentionally replaced with the zip project structure while preserving `.git` and `.codex`.
-- The app now uses a small Node.js HTTP API, cookie sessions, and local JSON persistence in `data/db.json`.
-- Frontend is a browser SPA in `src/js/main.js` with Russian UI and no external runtime dependencies.
+- `npm run build` passes after Postgres/upload code.
+- PostgreSQL runtime smoke depends on Docker daemon being available.
 
-## Final Checks Before Handoff
+## Next Steps
 
-- Run `npm run build`.
-- Run a browser smoke test for registration, workspace member add, task creation, comments/history, checklist guard, drag/drop, defer, and restore.
-- Confirm console is clean and update screenshots if UI changed.
+- If Docker is running, execute `docker compose up -d db`, start `npm run dev`, and smoke-test registration/task/upload.

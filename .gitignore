@@ -2,3 +2,4 @@
 .playwright-mcp/
 kanban-ru-mobile.png
 screenshots/
+data/*.json

@@ -1,17 +1,6 @@
-# Прогресс
+# Progress
 
-## 2026-06-09
-
-- Инициализирован project memory bank.
-- Создана ветка `codex/kanban-aging-demo`.
-- Реализована статическая кликабельная канбан-демка с Ассистентом фокуса.
-- Добавлены тесты чистой core-логики: возраст, ранжирование, WIP, перемещение, разделение и summary.
-- Добавлены README, research notes, technical architecture и demo-flow docs.
-- После замечания пользователя весь видимый продуктовый слой переведен на русский, включая демо-карточки, UI-строки и docs.
-- После замечания “наполовину лендос” интерфейс переделан в чистую доску: appbar + left assistant rail + board + right detail panel.
-- После Playwright self-review старый shell признан неудачным и пересобран с нуля: commandbar + compact assistant + selected-card strip + full-width board.
-- После замечания про `+1 день` и моки приложение переведено в production-shaped single-user режим: пустой first-run, ручное добавление карточек, текущее время, новый storage key, без seed-данных, сброса сценария и внешнего font import.
-- После скрина с нативным dropdown в форме создания карточки приоритет и размер заменены на кастомные segment controls; Playwright подтвердил отсутствие `<select>`, сохранение `priority/size` и отсутствие overflow.
-- В свободный слот action grid добавлена кнопка `Архив`; архив открывается модалкой и поддерживает `Вернуть`, которое снимает `archivedAt` и возвращает карточку в прежнюю колонку.
-- Рядом с `Ассистент фокуса` добавлена `?`-кнопка с popover-формулой скоринга; коэффициенты вынесены в `SCORING_RULES` и используются и расчетом, и UI.
-- Формула Ассистента фокуса заменена на SLE-модель: возраст потока нормализуется через S/M/L сроки, карточки получили `createdAt`, `startedAt`, `finishedAt`, добавлен документ `docs/research/focus-scoring-model.md`; Playwright подтвердил SLE-попап и ranking S-vs-L.
+- Replaced the stale board with the current `kanban_fixed 2.zip` project.
+- Added Node API, cookie auth, JSON persistence, workspaces, members by login, projects, task CRUD, drag/drop status changes, checklist guard, materials, comments, history, and deferred-task archive.
+- Added focused Node tests for registration, membership, task metadata, comments/history, checklist guard, and deferred visibility.
+- Added current README, technical architecture docs, user workflow docs, and updated project memory.

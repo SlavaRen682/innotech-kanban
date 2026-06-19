@@ -1,29 +1,25 @@
-# Project Agent Instructions
+# Project Instructions
 
-## Startup
+## Project
 
-- Read `.codex/memory/MEMORY.md` before non-trivial work.
-- For continuation work, also read `.codex/memory/handoff.md` and `.codex/memory/active.md`.
-- Use topic files from `.codex/memory/` only when relevant to the task.
-- If this memory bank is missing in another project during non-trivial work, initialize it with `codex-memory-init` unless the user explicitly asked for no file changes.
+Innotech Workspace Kanban is a Russian-language educational kanban app with a small Node.js backend and browser SPA.
 
-## Project Commands
+## Commands
 
-- Build:
-- Test:
-- Lint:
-- Typecheck:
-- Run:
+- `npm run dev` - start local server, default URL `http://localhost:5173`.
+- `PORT=5174 npm run dev` - start on an alternate port.
+- `npm run lint` - syntax-check server, store, client, and tests.
+- `npm test` - run Node test suite.
+- `npm run build` - run lint and tests.
 
-## Project Rules
+## Local Data
 
-- Follow existing architecture and style.
-- Keep changes scoped to the requested behavior.
-- Work autonomously after architecture is approved: investigate, implement, verify, and update context without waiting for step-by-step direction.
-- Ask before architecture or quality-impacting decisions: public APIs, database schema, auth/security model, service/module boundaries, persistence, queues/caches, deployment topology, large dependencies, or framework changes.
-- For architecture decisions, present a recommendation, alternatives, tradeoffs, affected files/modules, and the implementation plan after approval.
-- Use Playwright MCP for frontend/browser verification when UI behavior changes.
-- Local checkpoint commits are allowed during substantial work when they make progress safer. Never push unless the user explicitly asks.
-- The agent may move between its own local checkpoint commits when that is the easiest path to the goal, but must not discard user changes.
-- Update `.codex/memory/handoff.md` and `.codex/memory/active.md` after non-trivial work.
-- Before the final response after non-trivial project work, update `.codex/memory/handoff.md` and `.codex/memory/active.md`; if no update is needed, state why.
+- Runtime data is stored in `data/db.json`.
+- `data/*.json` is ignored by git because it contains local users, sessions, and board data.
+
+## Quality Rules
+
+- Keep the app in Russian.
+- Keep the implementation production-shaped for the course scope: no demo-only branches, fake UI controls, or presentation-only shortcuts.
+- Update `README.md`, `docs/technical/`, `docs/user/`, and `.codex/memory/` when behavior, architecture, commands, or user workflows change.
+- Verify UI changes through a browser smoke test and run `npm run build` before reporting completion.

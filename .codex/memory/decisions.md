@@ -1,30 +1,13 @@
-# Решения
+# Decisions
 
-## 2026-06-09: Ассистент фокуса
+## Use Concrete Team Workflow Features Instead Of AI Estimation
 
-Принято: уникальная фишка — ассистент, который ранжирует карточки по SLE-риску, возрасту в колонке, блокировке, WIP-перегрузу, приоритету, риску срока и размеру.
+- Decision: implement auth, workspace membership, projects, checklists, materials, comments, history, and deferred tasks.
+- Reason: the user rejected abstract AI task-size estimation because it needs private project context and duplicates human responsibility. These features change observable workflow behavior and are easier to justify on defense.
+- Rejected: AI-based task sizing and context-heavy assistant scoring.
 
-Отклоненные альтернативы:
+## Keep Persistence Local And Dependency-Free
 
-- автосброс повторяемых задач: полезно, но менее заметно для учебной демки;
-- граф зависимостей: сложнее и слишком широко для первой кликабельной версии.
-
-Причина: ресерч указал на зависшие карточки, time-in-status, WIP-неясность и гравитацию бэклога как более сильные боли канбана.
-
-## 2026-06-09: SLE вместо линейного возраста
-
-Принято: формула ассистента должна сравнивать возраст карточки с ожидаемым сроком по размеру: S = 2 дня, M = 4 дня, L = 7 дней. Возраст нормализуется как `возраст / SLE`, capped at 1.4, с бонусами от 75% и 100% SLE.
-
-Отклонено: оставлять `возраст * 7` как основной сигнал.
-
-Причина: одинаковый календарный возраст не означает одинаковый риск для маленькой и большой карточки. Kanban Guide рекомендует использовать SLE как elapsed time + probability, основанные на historical cycle time; пока истории нет, допустим best guess, который позже заменяется фактическим P85.
-
-## 2026-06-09: Статическая frontend-демка
-
-Принято: статический HTML/CSS/JS без backend и runtime package dependencies.
-
-Причина: пользователю нужна кликабельная демка для учебы/защиты; localStorage достаточно и не добавляет лишнюю архитектуру.
-
-## 2026-06-09: Русский продуктовый слой
-
-Принято: весь видимый интерфейс, демо-данные и документация должны быть на русском языке. Кодовые идентификаторы можно оставлять английскими.
+- Decision: use a JSON file store behind a small Node HTTP API.
+- Reason: enough for a course demo, easy to run locally, no database setup, and still supports real auth/session/API behavior.
+- Rejected: database service and heavy framework setup for this scope.

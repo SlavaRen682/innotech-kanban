@@ -1,73 +1,18 @@
-# Активный контекст
+# Active Work
 
-## Текущая задача
+## Current Task
 
-Сделать production-shaped single-user канбан-доску на русском языке с уникальной фишкой: Ассистентом фокуса, который объясняет, что закрывать первым.
+- Implement the current `kanban_fixed 2.zip` project as the source of truth, not the older focus-assistant board.
+- Build a Russian-language kanban product that supports practical team workflows: auth, workspace membership by login, projects, task attributes, checklist, materials, comments, history, and deferred tasks.
 
-## Ветка
+## State
 
-`codex/kanban-aging-demo`
+- The old app files were intentionally replaced with the zip project structure while preserving `.git` and `.codex`.
+- The app now uses a small Node.js HTTP API, cookie sessions, and local JSON persistence in `data/db.json`.
+- Frontend is a browser SPA in `src/js/main.js` with Russian UI and no external runtime dependencies.
 
-## Состояние реализации
+## Final Checks Before Handoff
 
-Статические файлы приложения:
-
-- `index.html`
-- `src/kanban-core.js`
-- `src/app.js`
-- `src/styles.css`
-- `tests/kanban-core.test.mjs`
-
-Приложение стартует пустым. Карточки появляются только после ручного создания и сохраняются в `localStorage` под ключом `kanban-flow-board-state-v1`. Фиксированной даты, `+1 день`, seed-данных, reset-сценария и внешнего font import нет.
-
-## Ассистент фокуса
-
-Ассистент ранжирует реальные незакрытые карточки по SLE-модели:
-
-`Оценка = max(0, min(возраст / SLE, 1.4) * 45 + бонус SLE + стадия + приоритет + размер + срок + зависание + блокер + WIP)`.
-
-Стартовая SLE-политика:
-
-- S = 2 дня;
-- M = 4 дня;
-- L = 7 дней;
-- бонус от 75% SLE = +8;
-- бонус от 100% SLE = +22;
-- cap нормализованного возраста = 1.4.
-
-Карточки хранят две временные оси:
-
-- `enteredAt`: возраст в текущей колонке;
-- `startedAt` / `finishedAt`: возраст в рабочем потоке и будущий cycle time.
-
-Обоснование модели лежит в `docs/research/focus-scoring-model.md`.
-
-## Текущий UI
-
-- commandbar с метриками, `Новая задача` и `Архив`;
-- компактный блок `Что закрыть первым`;
-- `?` рядом с `Ассистент фокуса`, popover с точной SLE-формулой и коэффициентами из `SCORING_RULES`;
-- selected-card strip с действиями `Назад`, `Вперед`, `Заблокировать`, `Разделить`, `В архив`, `Архив`;
-- полноширинная канбан-доска из 5 колонок;
-- форма создания использует кастомные segment controls для `Приоритет` и `Размер`, без нативных dropdown;
-- архив открывается модалкой, карточки можно вернуть обратно.
-
-Backend, авторизация, база данных и multi-user sync не добавлены. Для них нужно отдельное архитектурное решение.
-
-## Проверено
-
-- `npm run build`: lint + 13 Node tests проходят.
-- Playwright MCP:
-  - новая SLE-формула видна в popover;
-  - `SLE 85%`, S = 2 дн., M = 4 дн., L = 7 дн. видны;
-  - ранжирование поднимает заблокированную review-карточку, затем маленькую SLE-рискованную карточку, а большую L-карточку с тем же возрастом держит ниже;
-  - desktop 1440px и mobile 390px без horizontal overflow;
-  - console: 0 errors, 0 warnings.
-- Свежие скрины:
-  - `screenshots/kanban-sle-formula-1440.png`;
-  - `screenshots/kanban-sle-formula-390.png`.
-
-## Следующие шаги
-
-- Локальный сервер запущен на `http://localhost:5173`.
-- Если пользователь захочет командный production с реальной историей cycle time, нужно согласовать backend/storage/auth и вычисление P85 SLE по завершенным карточкам.
+- Run `npm run build`.
+- Run a browser smoke test for registration, workspace member add, task creation, comments/history, checklist guard, drag/drop, defer, and restore.
+- Confirm console is clean and update screenshots if UI changed.

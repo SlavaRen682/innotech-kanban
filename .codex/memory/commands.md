@@ -1,20 +1,25 @@
-# Команды
+# Commands
 
-## Запуск
+## Development
 
 ```bash
 npm run dev
 ```
 
-Открыть `http://localhost:5173`.
+Default URL: `http://localhost:5173`.
 
-## Проверка
+Use an alternate port when needed:
 
 ```bash
+PORT=5174 npm run dev
+```
+
+## Verification
+
+```bash
+npm run lint
+npm test
 npm run build
 ```
 
-Команда запускает:
-
-- `npm run lint`: синтаксическая проверка `src/kanban-core.js`, `src/app.js` и тестов.
-- `npm test`: тесты канбан-скоринга и переходов состояния.
+`npm run build` runs lint and tests.

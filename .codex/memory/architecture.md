@@ -1,22 +1,34 @@
-# Архитектура
+# Architecture
 
-## Текущее состояние
+## Current App
 
-Статическая browser-only канбан-доска с Ассистентом фокуса. Весь видимый продуктовый слой должен быть на русском языке.
+Innotech Workspace Kanban is a small full-stack local app for course demonstration.
 
-## Модули
+## Modules
 
-- `src/kanban-core.js`: чистая модель доски, WIP-проверки, SLE-скоринг карточек, focus ranking, действия над карточками, архив и сводки.
-- `src/app.js`: DOM-рендеринг, обработка событий, drag/drop, localStorage, состояние модалки и reveal-анимации.
-- `src/styles.css`: премиальная визуальная система с double-bezel панелями, адаптивной доской, WIP-метрами, age states и кастомным motion.
-- `tests/kanban-core.test.mjs`: behavior tests для core-модели.
+- `server.js`: Node.js HTTP server, static file serving, cookie-session API routing.
+- `src/server/store.js`: JSON-backed store and all business rules.
+- `src/js/main.js`: browser SPA, API client, board interactions, modals, detail panel.
+- `src/css/style.css`: visual system and responsive layout.
+- `tests/store.test.mjs`: domain tests.
 
-## Сохранение
+## Data Flow
 
-Приложение использует browser `localStorage` key `kanban-flow-board-state-v1`. Backend отсутствует.
+```text
+Browser SPA -> fetch /api/* -> server.js -> JsonStore -> data/db.json
+```
 
-Карточки имеют `enteredAt` для возраста в текущей колонке и `startedAt` / `finishedAt` для возраста рабочего потока и будущего cycle time.
+## Core Entities
 
-## SLE Скоринг
+- Users with unique login and hashed password.
+- Sessions stored by opaque token in an HttpOnly cookie.
+- Workspaces with owner/member membership.
+- Projects inside a workspace.
+- Tasks with status, assignee, priority, due date, tag, checklist, materials, comments, history, and deferred state.
 
-Стартовая SLE-политика: S = 2 дня, M = 4 дня, L = 7 дней. `scoreCard` сравнивает `flowAgeDays / expectedDays`, добавляет бонусы от 75% и 100% SLE, а затем учитывает стадию, приоритет, размер, срок, блокер, WIP-перегруз и зависание в колонке. Видимая формула в `src/app.js` рендерится из `SCORING_RULES`, чтобы UI совпадал с расчетом.
+## Important Rules
+
+- Only workspace members can read or mutate workspace data.
+- Only owner can add members.
+- Done status is blocked while checklist has incomplete items.
+- Deferred tasks are removed from active mode and visible in deferred mode.

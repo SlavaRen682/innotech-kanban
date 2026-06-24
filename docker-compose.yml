@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: innotech-kanban-postgres
+    environment:
+      POSTGRES_DB: kanban
+      POSTGRES_USER: kanban
+      POSTGRES_PASSWORD: kanban
+    ports:
+      - "55432:5432"
+    volumes:
+      - kanban-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kanban -d kanban"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    container_name: innotech-kanban-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://kanban:kanban@db:5432/kanban
+      PORT: 5173
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "5173:5173"
+    volumes:
+      - kanban-uploads:/app/uploads
+
+volumes:
+  kanban-postgres-data:
+  kanban-uploads:

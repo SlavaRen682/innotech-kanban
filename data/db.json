@@ -1,0 +1,633 @@
+{
+  "nextIds": {
+    "user": 9,
+    "workspace": 9,
+    "project": 9,
+    "task": 5,
+    "comment": 5,
+    "history": 24,
+    "checklist": 9,
+    "material": 5
+  },
+  "users": [
+    {
+      "id": 1,
+      "login": "owner-ui",
+      "name": "Ольга Owner",
+      "passwordHash": "98001c06a5c033be25e57561f69b9406:c406bfabf50edfec31a28937e06295d2b634e7c4db4789539a16653c97e714fd459bbb30cd4895a7a930e32f6a3c809faef087c4a663fc0d2e7ba0f7a648f83f",
+      "createdAt": "2026-06-19T12:02:25.807Z"
+    },
+    {
+      "id": 2,
+      "login": "member-ui",
+      "name": "Миша Member",
+      "passwordHash": "e1318ac345904841a6e53c7afcb75c1d:7720dd3a29be0ac87cf05aa3a0362f2ba7d98922954330e572c92dd260972f771e65b5b000c9609a3bbb585c8798a9e3158437225657fd99846f5243038ca9a6",
+      "createdAt": "2026-06-19T12:02:26.319Z"
+    },
+    {
+      "id": 3,
+      "login": "owner076150",
+      "name": "Ольга Owner",
+      "passwordHash": "05cb189d1a980d18691fdfbd09436178:8831b859e4d3f785533c52e19dab4385bb97ec00086695d117e714309fea9c0b4233560ad850cf2f693ea52bb388cd149c50aecf24618fffeee022b6f41619de",
+      "createdAt": "2026-06-19T12:11:16.774Z"
+    },
+    {
+      "id": 4,
+      "login": "member076150",
+      "name": "Миша Member",
+      "passwordHash": "5d27236c8a9c24776b370b843b0d98db:164e41c3a4d796028e28e20a42a98ae15260aa6630c201565acf6f4a94bccb2fd3a881e5ae14569b1355ff96d732457e4400659715d0d069a204538abe73c3a8",
+      "createdAt": "2026-06-19T12:12:16.347Z"
+    },
+    {
+      "id": 5,
+      "login": "owner370597",
+      "name": "Ольга Owner",
+      "passwordHash": "8454e0ad01a5ca4ffb90ffac95482225:faca081ae6f90c1fba0e3fc406fc2d2569def5861ea54827a04c9649044e8799243ea1876808f31dc7c17fa247d379afd1236d6d97b862b0bd3737f8fec814c2",
+      "createdAt": "2026-06-19T12:16:11.611Z"
+    },
+    {
+      "id": 6,
+      "login": "member370597",
+      "name": "Миша Member",
+      "passwordHash": "06d3ba51cce4ebeba597d5ed4da9ffe5:09dd68084de5d1439d80386477fedca321a2ec6ba04b4498a36cdf523b52cdb5a9689f757d90b5c100d37bb33932819665749c936de11a3127d5e7a076228e98",
+      "createdAt": "2026-06-19T12:16:11.858Z"
+    },
+    {
+      "id": 7,
+      "login": "demo_owner_989988",
+      "name": "Ольга Owner",
+      "passwordHash": "8f853cbdbd4ef8b6351991ea5c91e603:e751d791ed61cda2ed89fcc8a830e4c3da7af6f5ee75b378c49b70634a5f86d5455ee2805efb1d4addaa6db3ca659e488121f8dfd4c76243283167f497e8cbcd",
+      "createdAt": "2026-06-19T12:43:10.561Z"
+    },
+    {
+      "id": 8,
+      "login": "demo_member_989988",
+      "name": "Миша Member",
+      "passwordHash": "b0f21e3641f9ff111df9dd2935016524:55f99ae80ff0e1a79e49f63c9ad82fe298bd441d577fdfccb54cb421be676f543e6f29216d9dbdfebca0c72bbb6290df1558a3062cef20bfd95d1eae60fe9b66",
+      "createdAt": "2026-06-19T12:43:11.172Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "5afee463057b3ce064799e36d97c28d34630c50d0e0d48435a3dffe2dae32b42",
+      "userId": 1,
+      "createdAt": "2026-06-19T12:02:26.373Z"
+    },
+    {
+      "token": "d20c71e21a5b8de1de29f6c5c80c0733889a2d2dbf7ead1e366eea790dfd2cf7",
+      "userId": 4,
+      "createdAt": "2026-06-19T12:12:16.376Z"
+    },
+    {
+      "token": "7e77d57856bb2d5d0e87560347b9230ece24ad046654e99bc0d781ddcb192013",
+      "userId": 6,
+      "createdAt": "2026-06-19T12:16:11.895Z"
+    },
+    {
+      "token": "9b18dfffa804bd5d2dfe12739056fce65b7df4319a255e9dce411fa88b2fdf65",
+      "userId": 7,
+      "createdAt": "2026-06-19T12:43:10.584Z"
+    },
+    {
+      "token": "7fdbdbb499b351760fb3295ec7ff08034a812cd6ada22f18c785ceffbd7cf772",
+      "userId": 8,
+      "createdAt": "2026-06-19T12:43:11.196Z"
+    }
+  ],
+  "workspaces": [
+    {
+      "id": 1,
+      "name": "Мой workspace",
+      "ownerId": 1,
+      "createdAt": "2026-06-19T12:02:25.807Z"
+    },
+    {
+      "id": 2,
+      "name": "Мой workspace",
+      "ownerId": 2,
+      "createdAt": "2026-06-19T12:02:26.319Z"
+    },
+    {
+      "id": 3,
+      "name": "Мой workspace",
+      "ownerId": 3,
+      "createdAt": "2026-06-19T12:11:16.774Z"
+    },
+    {
+      "id": 4,
+      "name": "Мой workspace",
+      "ownerId": 4,
+      "createdAt": "2026-06-19T12:12:16.347Z"
+    },
+    {
+      "id": 5,
+      "name": "Мой workspace",
+      "ownerId": 5,
+      "createdAt": "2026-06-19T12:16:11.611Z"
+    },
+    {
+      "id": 6,
+      "name": "Мой workspace",
+      "ownerId": 6,
+      "createdAt": "2026-06-19T12:16:11.858Z"
+    },
+    {
+      "id": 7,
+      "name": "Мой workspace",
+      "ownerId": 7,
+      "createdAt": "2026-06-19T12:43:10.561Z"
+    },
+    {
+      "id": 8,
+      "name": "Мой workspace",
+      "ownerId": 8,
+      "createdAt": "2026-06-19T12:43:11.172Z"
+    }
+  ],
+  "members": [
+    {
+      "workspaceId": 1,
+      "userId": 1,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:02:25.807Z"
+    },
+    {
+      "workspaceId": 2,
+      "userId": 2,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:02:26.319Z"
+    },
+    {
+      "workspaceId": 1,
+      "userId": 2,
+      "role": "member",
+      "addedAt": "2026-06-19T12:02:51.237Z"
+    },
+    {
+      "workspaceId": 3,
+      "userId": 3,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:11:16.774Z"
+    },
+    {
+      "workspaceId": 4,
+      "userId": 4,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:12:16.347Z"
+    },
+    {
+      "workspaceId": 3,
+      "userId": 4,
+      "role": "member",
+      "addedAt": "2026-06-19T12:12:16.515Z"
+    },
+    {
+      "workspaceId": 5,
+      "userId": 5,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:16:11.611Z"
+    },
+    {
+      "workspaceId": 6,
+      "userId": 6,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:16:11.858Z"
+    },
+    {
+      "workspaceId": 5,
+      "userId": 6,
+      "role": "member",
+      "addedAt": "2026-06-19T12:16:12.092Z"
+    },
+    {
+      "workspaceId": 7,
+      "userId": 7,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:43:10.561Z"
+    },
+    {
+      "workspaceId": 8,
+      "userId": 8,
+      "role": "owner",
+      "addedAt": "2026-06-19T12:43:11.172Z"
+    },
+    {
+      "workspaceId": 7,
+      "userId": 8,
+      "role": "member",
+      "addedAt": "2026-06-19T12:43:11.636Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "workspaceId": 1,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:02:25.807Z"
+    },
+    {
+      "id": 2,
+      "workspaceId": 2,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:02:26.319Z"
+    },
+    {
+      "id": 3,
+      "workspaceId": 3,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:11:16.774Z"
+    },
+    {
+      "id": 4,
+      "workspaceId": 4,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:12:16.347Z"
+    },
+    {
+      "id": 5,
+      "workspaceId": 5,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:16:11.611Z"
+    },
+    {
+      "id": 6,
+      "workspaceId": 6,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:16:11.858Z"
+    },
+    {
+      "id": 7,
+      "workspaceId": 7,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:43:10.561Z"
+    },
+    {
+      "id": 8,
+      "workspaceId": 8,
+      "name": "Канбан",
+      "createdAt": "2026-06-19T12:43:11.172Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "projectId": 1,
+      "title": "Подготовить защиту",
+      "description": "Показать историю, комментарии и контроль чеклиста",
+      "tag": "qa",
+      "priority": "high",
+      "assigneeId": 2,
+      "dueDate": "2026-06-22",
+      "status": "done",
+      "deferred": false,
+      "deferredReason": "",
+      "deferredUntil": "",
+      "checklist": [
+        {
+          "id": 1,
+          "text": "Показать историю",
+          "done": true
+        },
+        {
+          "id": 2,
+          "text": "Показать комментарии",
+          "done": true
+        }
+      ],
+      "materials": [
+        {
+          "id": 1,
+          "name": "ТЗ",
+          "url": "https://example.com/spec"
+        }
+      ],
+      "createdBy": 1,
+      "createdAt": "2026-06-19T12:02:51.743Z",
+      "updatedAt": "2026-06-19T12:02:55.457Z"
+    },
+    {
+      "id": 2,
+      "projectId": 3,
+      "title": "Подготовить защиту",
+      "description": "Собрать сценарий показа и аргументы, почему функции нужны команде.",
+      "tag": "qa",
+      "priority": "high",
+      "assigneeId": 4,
+      "dueDate": "2026-06-30",
+      "status": "todo",
+      "deferred": false,
+      "deferredReason": "",
+      "deferredUntil": "",
+      "checklist": [
+        {
+          "id": 3,
+          "text": "Собрать сценарий",
+          "done": false
+        },
+        {
+          "id": 4,
+          "text": "Проверить демо",
+          "done": false
+        }
+      ],
+      "materials": [
+        {
+          "id": 2,
+          "name": "ТЗ",
+          "url": "https://example.com/spec"
+        }
+      ],
+      "createdBy": 3,
+      "createdAt": "2026-06-19T12:13:09.629Z",
+      "updatedAt": "2026-06-19T12:13:09.629Z"
+    },
+    {
+      "id": 3,
+      "projectId": 5,
+      "title": "Подготовить защиту",
+      "description": "Собрать сценарий показа и аргументы, почему функции нужны команде.",
+      "tag": "qa",
+      "priority": "high",
+      "assigneeId": 6,
+      "dueDate": "2026-06-30",
+      "status": "done",
+      "deferred": false,
+      "deferredReason": "",
+      "deferredUntil": "",
+      "checklist": [
+        {
+          "id": 5,
+          "text": "Собрать сценарий",
+          "done": true
+        },
+        {
+          "id": 6,
+          "text": "Проверить демо",
+          "done": true
+        }
+      ],
+      "materials": [
+        {
+          "id": 3,
+          "name": "ТЗ",
+          "url": "https://example.com/spec"
+        }
+      ],
+      "createdBy": 5,
+      "createdAt": "2026-06-19T12:16:14.121Z",
+      "updatedAt": "2026-06-19T12:19:58.237Z"
+    },
+    {
+      "id": 4,
+      "projectId": 7,
+      "title": "Подготовить защиту",
+      "description": "Собрать сценарий показа и аргументы, почему функции нужны команде.",
+      "tag": "qa",
+      "priority": "high",
+      "assigneeId": 8,
+      "dueDate": "2026-06-30",
+      "status": "done",
+      "deferred": false,
+      "deferredReason": "",
+      "deferredUntil": "",
+      "checklist": [
+        {
+          "id": 7,
+          "text": "Собрать сценарий",
+          "done": true
+        },
+        {
+          "id": 8,
+          "text": "Проверить демо",
+          "done": true
+        }
+      ],
+      "materials": [
+        {
+          "id": 4,
+          "name": "ТЗ",
+          "url": "https://example.com/spec"
+        }
+      ],
+      "createdBy": 7,
+      "createdAt": "2026-06-19T12:43:14.136Z",
+      "updatedAt": "2026-06-19T12:43:24.719Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "taskId": 1,
+      "userId": 1,
+      "text": "Комментарий сохраняет контекст решения",
+      "createdAt": "2026-06-19T12:02:52.246Z"
+    },
+    {
+      "id": 2,
+      "taskId": 2,
+      "userId": 3,
+      "text": "Комментарий сохраняет контекст решения для защиты.",
+      "createdAt": "2026-06-19T12:13:11.712Z"
+    },
+    {
+      "id": 3,
+      "taskId": 3,
+      "userId": 5,
+      "text": "Комментарий сохраняет контекст решения для защиты.",
+      "createdAt": "2026-06-19T12:16:16.520Z"
+    },
+    {
+      "id": 4,
+      "taskId": 4,
+      "userId": 7,
+      "text": "Комментарий сохраняет контекст решения для защиты.",
+      "createdAt": "2026-06-19T12:43:14.853Z"
+    }
+  ],
+  "history": [
+    {
+      "id": 1,
+      "taskId": 1,
+      "userId": 1,
+      "action": "created",
+      "details": "Создал задачу в проекте «Канбан»",
+      "createdAt": "2026-06-19T12:02:51.743Z"
+    },
+    {
+      "id": 2,
+      "taskId": 1,
+      "userId": 1,
+      "action": "commented",
+      "details": "Добавил комментарий",
+      "createdAt": "2026-06-19T12:02:52.246Z"
+    },
+    {
+      "id": 3,
+      "taskId": 1,
+      "userId": 1,
+      "action": "checklist",
+      "details": "Выполнил пункт «Показать историю»",
+      "createdAt": "2026-06-19T12:02:52.648Z"
+    },
+    {
+      "id": 4,
+      "taskId": 1,
+      "userId": 1,
+      "action": "checklist",
+      "details": "Выполнил пункт «Показать комментарии»",
+      "createdAt": "2026-06-19T12:02:52.650Z"
+    },
+    {
+      "id": 5,
+      "taskId": 1,
+      "userId": 1,
+      "action": "moved",
+      "details": "Переместил из «К выполнению» в «Готово»",
+      "createdAt": "2026-06-19T12:02:53.448Z"
+    },
+    {
+      "id": 6,
+      "taskId": 1,
+      "userId": 1,
+      "action": "deferred",
+      "details": "Отложил задачу: Ждем финальный созвон",
+      "createdAt": "2026-06-19T12:02:54.353Z"
+    },
+    {
+      "id": 7,
+      "taskId": 1,
+      "userId": 1,
+      "action": "restored",
+      "details": "Вернул задачу на доску",
+      "createdAt": "2026-06-19T12:02:55.457Z"
+    },
+    {
+      "id": 8,
+      "taskId": 2,
+      "userId": 3,
+      "action": "created",
+      "details": "Создал задачу в проекте «Канбан»",
+      "createdAt": "2026-06-19T12:13:09.629Z"
+    },
+    {
+      "id": 9,
+      "taskId": 2,
+      "userId": 3,
+      "action": "commented",
+      "details": "Добавил комментарий",
+      "createdAt": "2026-06-19T12:13:11.712Z"
+    },
+    {
+      "id": 10,
+      "taskId": 3,
+      "userId": 5,
+      "action": "created",
+      "details": "Создал задачу в проекте «Канбан»",
+      "createdAt": "2026-06-19T12:16:14.121Z"
+    },
+    {
+      "id": 11,
+      "taskId": 3,
+      "userId": 5,
+      "action": "commented",
+      "details": "Добавил комментарий",
+      "createdAt": "2026-06-19T12:16:16.520Z"
+    },
+    {
+      "id": 12,
+      "taskId": 3,
+      "userId": 5,
+      "action": "checklist",
+      "details": "Выполнил пункт «Собрать сценарий»",
+      "createdAt": "2026-06-19T12:16:17.197Z"
+    },
+    {
+      "id": 13,
+      "taskId": 3,
+      "userId": 5,
+      "action": "checklist",
+      "details": "Выполнил пункт «Проверить демо»",
+      "createdAt": "2026-06-19T12:16:17.839Z"
+    },
+    {
+      "id": 14,
+      "taskId": 3,
+      "userId": 5,
+      "action": "updated",
+      "details": "Изменил: статус",
+      "createdAt": "2026-06-19T12:19:18.688Z"
+    },
+    {
+      "id": 15,
+      "taskId": 3,
+      "userId": 5,
+      "action": "deferred",
+      "details": "Отложил задачу: Ждем финальную обратную связь преподавателя",
+      "createdAt": "2026-06-19T12:19:56.654Z"
+    },
+    {
+      "id": 16,
+      "taskId": 3,
+      "userId": 5,
+      "action": "restored",
+      "details": "Вернул задачу на доску",
+      "createdAt": "2026-06-19T12:19:58.237Z"
+    },
+    {
+      "id": 17,
+      "taskId": 4,
+      "userId": 7,
+      "action": "created",
+      "details": "Создал задачу в проекте «Канбан»",
+      "createdAt": "2026-06-19T12:43:14.136Z"
+    },
+    {
+      "id": 18,
+      "taskId": 4,
+      "userId": 7,
+      "action": "commented",
+      "details": "Добавил комментарий",
+      "createdAt": "2026-06-19T12:43:14.853Z"
+    },
+    {
+      "id": 19,
+      "taskId": 4,
+      "userId": 7,
+      "action": "checklist",
+      "details": "Выполнил пункт «Собрать сценарий»",
+      "createdAt": "2026-06-19T12:43:18.152Z"
+    },
+    {
+      "id": 20,
+      "taskId": 4,
+      "userId": 7,
+      "action": "checklist",
+      "details": "Выполнил пункт «Проверить демо»",
+      "createdAt": "2026-06-19T12:43:18.802Z"
+    },
+    {
+      "id": 21,
+      "taskId": 4,
+      "userId": 7,
+      "action": "updated",
+      "details": "Изменил: статус",
+      "createdAt": "2026-06-19T12:43:20.352Z"
+    },
+    {
+      "id": 22,
+      "taskId": 4,
+      "userId": 7,
+      "action": "deferred",
+      "details": "Отложил задачу: Ждем финальную обратную связь преподавателя",
+      "createdAt": "2026-06-19T12:43:22.388Z"
+    },
+    {
+      "id": 23,
+      "taskId": 4,
+      "userId": 7,
+      "action": "restored",
+      "details": "Вернул задачу на доску",
+      "createdAt": "2026-06-19T12:43:24.719Z"
+    }
+  ]
+}

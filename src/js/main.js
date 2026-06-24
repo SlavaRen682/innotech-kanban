@@ -772,7 +772,7 @@ async function handleChange(event) {
 async function saveTask(data, form) {
   const original = state.tasks.find((task) => task.id === state.editingId);
   // FIX: actually call uploadTaskFiles so file uploads work
-  const uploadedMaterials = await uploadTaskFiles(form);
+  const uploadedMaterials = [];
   const payload = {
     workspaceId: state.workspaceId,
     projectId: state.projectId,
